@@ -20,7 +20,8 @@ from hybrid_rag.schemas import (
     RetrievalMode,
 )
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+_PKG_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = _PKG_ROOT if (_PKG_ROOT / "artifacts").is_dir() else Path.cwd()
 DEFAULT_CORPUS_DIR = REPO_ROOT / "data" / "corpus"
 DEFAULT_EVAL_PATH = REPO_ROOT / "data" / "benchmark" / "eval_cases.json"
 DEFAULT_REPORT_PATH = REPO_ROOT / "artifacts" / "rag_eval_report.json"
