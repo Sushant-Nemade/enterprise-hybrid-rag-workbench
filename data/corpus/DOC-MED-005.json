@@ -1,0 +1,30 @@
+{
+  "doc_id": "DOC-MED-005",
+  "title": "Regulated Medical Device & Clinical AI Software Governance (ISO 13485 / EU MDR)",
+  "allowed_roles": [
+    "engineering",
+    "legal_compliance",
+    "executive"
+  ],
+  "effective_date": "2026-08-01",
+  "max_staleness_days": 150,
+  "domain": "clinical_regulatory",
+  "version": "1.8",
+  "pages": [
+    {
+      "page_number": 1,
+      "section_heading": "1. Clinical Decision Support Autonomy Boundary (MED-MDR-704)",
+      "content": "Directive MED-MDR-704 governs AI-assisted workflows in healthcare and medical imaging environments under EU MDR and ISO 13485. Generative and retrieval systems are strictly classified as clinical documentation and evidence-lookup aids; they must never issue autonomous diagnostic conclusions or treatment orders. Licensed clinician sign-off is mandatory for all Class IIa and Class IIb workflows."
+    },
+    {
+      "page_number": 2,
+      "section_heading": "2. Guideline Provenance & Digest Traceability (ISO-13485-CL-7.5.8)",
+      "content": "In accordance with traceability control ISO-13485-CL-7.5.8, every synthesized clinical protocol answer must display the exact source document ID, page number, effective date, and SHA-256 content digest. If an underlying clinical SOP is updated, all previously approved summaries referencing the superseded digest are automatically invalidated."
+    },
+    {
+      "page_number": 3,
+      "section_heading": "3. Post-Market Surveillance & NLI Entailment Floor",
+      "content": "Post-Market Surveillance (PMS) audits must be executed every 90 days on clinical retrieval pipelines. Synthesized responses must achieve a minimum NLI passage entailment score of 0.78 on every atomic sentence, and any response citing a guideline within 15 days of staleness expiration must display an explicit clinical governance warning."
+    }
+  ]
+}

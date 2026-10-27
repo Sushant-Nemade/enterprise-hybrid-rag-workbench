@@ -1,0 +1,30 @@
+{
+  "doc_id": "DOC-PROC-004",
+  "title": "Enterprise Cloud & AI Vendor Procurement Policy",
+  "allowed_roles": [
+    "procurement",
+    "legal_compliance",
+    "executive"
+  ],
+  "effective_date": "2026-06-20",
+  "max_staleness_days": 180,
+  "domain": "procurement",
+  "version": "4.2",
+  "pages": [
+    {
+      "page_number": 1,
+      "section_heading": "1. Annual Contract Value Approval Tiers (TIER-PROC-302)",
+      "content": "Schedule TIER-PROC-302 defines commercial approval authority by Annual Contract Value (ACV). Contracts up to EUR 50,000 require Procurement Lead approval. Contracts between EUR 50,001 and EUR 250,000 require joint sign-off from the VP of Procurement and the Data Protection Officer (DPO). Any AI or cloud agreement exceeding EUR 250,000 ACV requires formal authorization from the Executive Tender Board."
+    },
+    {
+      "page_number": 2,
+      "section_heading": "2. Mandatory Zero-Data-Retention Clause (CL-ZDR-09)",
+      "content": "Every commercial agreement with a foundation model or external inference provider must incorporate Clause CL-ZDR-09 (Mandatory Zero-Data-Retention). Under CL-ZDR-09, the vendor warrants that enterprise prompts, retrieved passages, and outputs are never used for model training or weight updates, and volatile inference buffers are wiped within 24 hours."
+    },
+    {
+      "page_number": 3,
+      "section_heading": "3. Supplier Security Attestation & CycloneDX SBOM Requirement",
+      "content": "Prior to purchase order issuance, software vendors must submit a current SOC 2 Type II report or ISO/IEC 27001:2022 certificate alongside a machine-readable CycloneDX 1.6 Software Bill of Materials (SBOM). Artifacts with unresolved critical CVEs (CVSS >= 9.0) are blocked from procurement onboarding."
+    }
+  ]
+}

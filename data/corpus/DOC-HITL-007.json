@@ -1,0 +1,26 @@
+{
+  "doc_id": "DOC-HITL-007",
+  "title": "Cryptographic Human-in-the-Loop (HITL) Review & Digest Binding Standard",
+  "allowed_roles": [
+    "public",
+    "engineering",
+    "legal_compliance",
+    "executive"
+  ],
+  "effective_date": "2026-09-20",
+  "max_staleness_days": 180,
+  "domain": "hitl_governance",
+  "version": "1.5",
+  "pages": [
+    {
+      "page_number": 1,
+      "section_heading": "1. Mandatory Review Queue Routing Criteria (HITL-DIGEST-801)",
+      "content": "Control HITL-DIGEST-801 specifies when a RAG response cannot be released directly to end users and must enter the transactional SQLite review queue with status pending_review. Automatic queueing occurs whenever: (a) any retrieved passage is flagged as stale beyond max_staleness_days, (b) the passage claim support rate falls below 0.72, or (c) the query touches regulated compliance boundaries."
+    },
+    {
+      "page_number": 2,
+      "section_heading": "2. SHA-256 Evidence Digest Binding & Upstream Invalidation",
+      "content": "Human reviewer sign-off (approve or reject) is cryptographically bound to the composite evidence digest: SHA256(normalized_query || sorted_chunk_sha256_digests || answer_sha256). Before serving any previously approved response, the runtime recomputes the digest against current corpus chunk hashes. Any upstream document edit changes the chunk SHA-256 and automatically transitions the record status to invalidated_by_upstream_edit."
+    }
+  ]
+}

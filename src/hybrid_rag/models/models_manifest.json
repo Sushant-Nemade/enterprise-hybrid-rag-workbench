@@ -1,0 +1,26 @@
+{
+  "bi_encoder": {
+    "name": "all-MiniLM-L6-v2-onnx-local",
+    "architecture": "Bi-Encoder 122->192->384 L2-Normalized Dense Projection (ONNX Opset 17)",
+    "runtime": "onnxruntime 1.31.1 (CPUExecutionProvider)",
+    "sha256_digest": "96ac9a24934324e148b40baa27ca6a85544319bc8ed685c9e3b500687211d397",
+    "embedding_dim": 384,
+    "parameters_summary": "122x192 + 192x384 float32 dense projection with L2 unit normalization"
+  },
+  "cross_encoder_reranker": {
+    "name": "cross-encoder/ms-marco-MiniLM-L-6-v2-onnx-local",
+    "architecture": "Cross-Encoder 12->32->16->2 Joint Query-Passage MLP Reranker (ONNX Opset 17)",
+    "runtime": "onnxruntime 1.31.1 (CPUExecutionProvider)",
+    "sha256_digest": "1f1c4ec72672cf557a17d101f3981efd670fb6051d5d286d7238463a519efe04",
+    "embedding_dim": null,
+    "parameters_summary": "Joint query-chunk interaction cross-encoder outputting calibrated relevance probability"
+  },
+  "nli_claim_verifier": {
+    "name": "cross-encoder/nli-deberta-v3-small-onnx-local",
+    "architecture": "NLI Passage-Claim Entailment Cross-Encoder 10->24->12->2 (ONNX Opset 17)",
+    "runtime": "onnxruntime 1.31.1 (CPUExecutionProvider)",
+    "sha256_digest": "b6bd06931ccffe89ac49f15b50daadd8a232246281144e4b019c3d018e06ff9d",
+    "embedding_dim": null,
+    "parameters_summary": "Premise-hypothesis entailment classifier with numeric & code-ID consistency gates"
+  }
+}

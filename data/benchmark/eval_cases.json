@@ -1,0 +1,1047 @@
+{
+  "dataset_name": "enterprise-hybrid-rag-workbench-50case-benchmark",
+  "schema_version": "1.0.0",
+  "default_as_of_date": "2026-10-27",
+  "description": "50 labelled enterprise RAG evaluation cases across 5 slices: 12 lexical_factual, 14 semantic_multichunk, 8 rbac_restricted, 8 stale_source, and 8 unanswerable_abstention.",
+  "cases": [
+    {
+      "case_id": "CASE-001",
+      "category": "lexical_factual",
+      "query": "Under release gate GATE-AI-104, what minimum NDCG@10 score and RBAC Leakage Rate are required before production promotion?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-AI-SOP-001"
+      ],
+      "expected_chunk_ids": [
+        "DOC-AI-SOP-001#P1"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "Under release gate GATE-AI-104, promotion requires a minimum NDCG@10 score of 0.82, a Passage Claim Support Rate of at least 0.85, and an RBAC Leakage Rate of 0.0 [DOC-AI-SOP-001#P1].",
+      "expected_key_terms": [
+        "GATE-AI-104",
+        "0.82",
+        "0.0"
+      ]
+    },
+    {
+      "case_id": "CASE-002",
+      "category": "lexical_factual",
+      "query": "What is the incident escalation code and response SLA when unsupported claims exceed 3.0% in 24 hours?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-AI-SOP-001"
+      ],
+      "expected_chunk_ids": [
+        "DOC-AI-SOP-001#P3"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "If the unsupported claim rate exceeds 3.0% over a rolling 24-hour window, incident code INC-SEV2-RAG must be escalated to the AI Safety Lead within 4 hours [DOC-AI-SOP-001#P3].",
+      "expected_key_terms": [
+        "INC-SEV2-RAG",
+        "4 hours",
+        "90"
+      ]
+    },
+    {
+      "case_id": "CASE-003",
+      "category": "lexical_factual",
+      "query": "In specification SPEC-RET-208, what BM25 parameters and dense embedding dimension are mandated?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-RAG-ARCH-002"
+      ],
+      "expected_chunk_ids": [
+        "DOC-RAG-ARCH-002#P1"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "Specification SPEC-RET-208 mandates SQLite FTS5 BM25 parameters k1=1.2 and b=0.75 paired with 384-dimensional L2-normalized dense embeddings [DOC-RAG-ARCH-002#P1].",
+      "expected_key_terms": [
+        "SPEC-RET-208",
+        "1.2",
+        "384"
+      ]
+    },
+    {
+      "case_id": "CASE-004",
+      "category": "lexical_factual",
+      "query": "What smoothing constant k and cross-encoder model are specified for Reciprocal Rank Fusion in DOC-RAG-ARCH-002?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-RAG-ARCH-002"
+      ],
+      "expected_chunk_ids": [
+        "DOC-RAG-ARCH-002#P2"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "Reciprocal Rank Fusion uses smoothing constant k=60, and the top 12 fused candidates are rescored by cross-encoder/ms-marco-MiniLM-L-6-v2 [DOC-RAG-ARCH-002#P2].",
+      "expected_key_terms": [
+        "k=60",
+        "ms-marco-MiniLM-L-6-v2",
+        "12"
+      ]
+    },
+    {
+      "case_id": "CASE-005",
+      "category": "lexical_factual",
+      "query": "Under clause GDPR-ART28-ANNEX-B, which AWS region and breach notification SLA are required for subprocessors?",
+      "user_role": "legal_compliance",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-GDPR-003"
+      ],
+      "expected_chunk_ids": [
+        "DOC-GDPR-003#P1"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "Clause GDPR-ART28-ANNEX-B requires EU/EEA data residency in eu-central-1 (Frankfurt), a signed DPA, and a 72-hour breach notification SLA [DOC-GDPR-003#P1].",
+      "expected_key_terms": [
+        "GDPR-ART28-ANNEX-B",
+        "eu-central-1",
+        "72-hour"
+      ]
+    },
+    {
+      "case_id": "CASE-006",
+      "category": "lexical_factual",
+      "query": "What is the purge deadline under workflow ERASURE-SLA-14D for GDPR Article 17 erasure requests?",
+      "user_role": "legal_compliance",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-GDPR-003"
+      ],
+      "expected_chunk_ids": [
+        "DOC-GDPR-003#P3"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "Under workflow ERASURE-SLA-14D, FTS5 tokens, dense embeddings, and cached HITL records must be purged within 14 calendar days [DOC-GDPR-003#P3].",
+      "expected_key_terms": [
+        "ERASURE-SLA-14D",
+        "14 calendar days",
+        "Article 17"
+      ]
+    },
+    {
+      "case_id": "CASE-007",
+      "category": "lexical_factual",
+      "query": "According to schedule TIER-PROC-302, who must approve an AI contract with an ACV between EUR 50,001 and EUR 250,000?",
+      "user_role": "procurement",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-PROC-004"
+      ],
+      "expected_chunk_ids": [
+        "DOC-PROC-004#P1"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "Under schedule TIER-PROC-302, contracts between EUR 50,001 and EUR 250,000 ACV require joint sign-off from the VP of Procurement and the Data Protection Officer (DPO) [DOC-PROC-004#P1].",
+      "expected_key_terms": [
+        "TIER-PROC-302",
+        "250,000",
+        "DPO"
+      ]
+    },
+    {
+      "case_id": "CASE-008",
+      "category": "lexical_factual",
+      "query": "What does contractual clause CL-ZDR-09 require regarding foundation model training and buffer wiping?",
+      "user_role": "procurement",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-PROC-004"
+      ],
+      "expected_chunk_ids": [
+        "DOC-PROC-004#P2"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "Clause CL-ZDR-09 mandates Zero-Data-Retention: prompts and outputs are never used for model training, and inference buffers must be wiped within 24 hours [DOC-PROC-004#P2].",
+      "expected_key_terms": [
+        "CL-ZDR-09",
+        "24 hours",
+        "Zero-Data-Retention"
+      ]
+    },
+    {
+      "case_id": "CASE-009",
+      "category": "lexical_factual",
+      "query": "What does traceability control ISO-13485-CL-7.5.8 require when an underlying clinical SOP is updated?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-MED-005"
+      ],
+      "expected_chunk_ids": [
+        "DOC-MED-005#P2"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "Control ISO-13485-CL-7.5.8 requires binding every clinical summary to source document ID, page number, effective date, and SHA-256 digest, automatically invalidating prior approvals when the SOP changes [DOC-MED-005#P2].",
+      "expected_key_terms": [
+        "ISO-13485-CL-7.5.8",
+        "SHA-256",
+        "invalidated"
+      ]
+    },
+    {
+      "case_id": "CASE-010",
+      "category": "lexical_factual",
+      "query": "Under control WAIVER-MAX-30D, what is the maximum duration of a temporary intake policy waiver?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-SEC-006"
+      ],
+      "expected_chunk_ids": [
+        "DOC-SEC-006#P3"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "Under control WAIVER-MAX-30D, temporary intake waivers require a named approver and tracker reference and expire within 30 calendar days [DOC-SEC-006#P3].",
+      "expected_key_terms": [
+        "WAIVER-MAX-30D",
+        "30 calendar days",
+        "TOML"
+      ]
+    },
+    {
+      "case_id": "CASE-011",
+      "category": "lexical_factual",
+      "query": "What are the three conditions under control HITL-DIGEST-801 that route a RAG response to pending_review?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-HITL-007"
+      ],
+      "expected_chunk_ids": [
+        "DOC-HITL-007#P1"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "Under HITL-DIGEST-801, responses route to pending_review when any passage is stale beyond max_staleness_days, passage claim support falls below 0.72, or the query touches regulated compliance boundaries [DOC-HITL-007#P1].",
+      "expected_key_terms": [
+        "HITL-DIGEST-801",
+        "0.72",
+        "pending_review"
+      ]
+    },
+    {
+      "case_id": "CASE-012",
+      "category": "lexical_factual",
+      "query": "Under standard FIN-QUOTA-312, what are the daily input and output token caps per business unit tenant?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-FINOPS-012"
+      ],
+      "expected_chunk_ids": [
+        "DOC-FINOPS-012#P1"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "Standard FIN-QUOTA-312 caps each business unit tenant at 2,500,000 input tokens per day and 400,000 output tokens per day with a 24-hour semantic cache TTL [DOC-FINOPS-012#P1].",
+      "expected_key_terms": [
+        "FIN-QUOTA-312",
+        "2,500,000",
+        "400,000"
+      ]
+    },
+    {
+      "case_id": "CASE-013",
+      "category": "semantic_multichunk",
+      "query": "During a dark launch of a candidate language model in production, what statistical divergence threshold or response time slowdown triggers an automatic revert?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-AI-SOP-001"
+      ],
+      "expected_chunk_ids": [
+        "DOC-AI-SOP-001#P2"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "During shadow deployment (canary silent parallel evaluation), a Population Stability Index (PSI) drift above 0.08 or CPU P99 latency above 450 milliseconds triggers an immediate circuit-breaker rollback [DOC-AI-SOP-001#P2].",
+      "expected_key_terms": [
+        "0.08",
+        "450",
+        "PSI"
+      ]
+    },
+    {
+      "case_id": "CASE-014",
+      "category": "semantic_multichunk",
+      "query": "Why does our enterprise architecture require evaluating user role clearance at index query time rather than redacting confidential documents after final results are ranked?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-RAG-ARCH-002"
+      ],
+      "expected_chunk_ids": [
+        "DOC-RAG-ARCH-002#P3"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "Pre-retrieval filtering (AC-PRE-01) is required because post-retrieval filtering lets unauthorized chunks displace authorized evidence from the top-k window and creates side-channel inference risks [DOC-RAG-ARCH-002#P3].",
+      "expected_key_terms": [
+        "AC-PRE-01",
+        "displace",
+        "pre-retrieval"
+      ]
+    },
+    {
+      "case_id": "CASE-015",
+      "category": "semantic_multichunk",
+      "query": "How must European citizen fiscal IDs, medical coverage records, and wire transfer routing strings be anonymized prior to generating production vector representations?",
+      "user_role": "legal_compliance",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-GDPR-003"
+      ],
+      "expected_chunk_ids": [
+        "DOC-GDPR-003#P2"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "German tax identifiers (Steuer-ID), statutory health insurance numbers (KVNR), and IBAN bank numbers must be checksum-verified and replaced with salted SHA-256 pseudonyms before indexing [DOC-GDPR-003#P2].",
+      "expected_key_terms": [
+        "Steuer-ID",
+        "KVNR",
+        "IBAN"
+      ]
+    },
+    {
+      "case_id": "CASE-016",
+      "category": "semantic_multichunk",
+      "query": "What open-source dependency manifest specification and maximum vulnerability severity score must a cloud vendor satisfy before contract approval?",
+      "user_role": "procurement",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-PROC-004"
+      ],
+      "expected_chunk_ids": [
+        "DOC-PROC-004#P3"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "Vendors must provide a SOC 2 Type II or ISO/IEC 27001:2022 attestation and a CycloneDX 1.6 Software Bill of Materials (SBOM), with zero unresolved critical CVEs (CVSS >= 9.0) [DOC-PROC-004#P3].",
+      "expected_key_terms": [
+        "CycloneDX 1.6",
+        "SBOM",
+        "9.0"
+      ]
+    },
+    {
+      "case_id": "CASE-017",
+      "category": "semantic_multichunk",
+      "query": "Can an enterprise neural assistant deployed in a radiology department independently prescribe patient therapy, and what physician approval rule applies?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-MED-005"
+      ],
+      "expected_chunk_ids": [
+        "DOC-MED-005#P1"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "Under directive MED-MDR-704, clinical AI tools are strictly documentation and evidence-lookup aids and must never issue autonomous diagnostic or treatment orders; licensed clinician sign-off is mandatory for Class IIa and IIb workflows [DOC-MED-005#P1].",
+      "expected_key_terms": [
+        "MED-MDR-704",
+        "clinician",
+        "Class IIa"
+      ]
+    },
+    {
+      "case_id": "CASE-018",
+      "category": "semantic_multichunk",
+      "query": "At what recurring interval must deployed hospital software undergo regulatory field quality reviews, and what factual grounding floor is required?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-MED-005"
+      ],
+      "expected_chunk_ids": [
+        "DOC-MED-005#P3"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "Post-Market Surveillance (PMS) audits run every 90 days and require a minimum NLI passage entailment score of 0.78 on every atomic sentence [DOC-MED-005#P3].",
+      "expected_key_terms": [
+        "90 days",
+        "0.78",
+        "Post-Market Surveillance"
+      ]
+    },
+    {
+      "case_id": "CASE-019",
+      "category": "semantic_multichunk",
+      "query": "Which cross-platform desktop wrapper runtime settings or executable code-signing certificate changes cause a package release to be blocked?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-SEC-006"
+      ],
+      "expected_chunk_ids": [
+        "DOC-SEC-006#P2"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "Under RULE-ELEC-04, enabling RunAsNode or EnableNodeCliInspectArguments, setting webSecurity to false, stripping Windows Authenticode signatures, or changing the publisher subject triggers rejection or security review [DOC-SEC-006#P2].",
+      "expected_key_terms": [
+        "RULE-ELEC-04",
+        "RunAsNode",
+        "Authenticode"
+      ]
+    },
+    {
+      "case_id": "CASE-020",
+      "category": "semantic_multichunk",
+      "query": "Which language compiler artifact formats and Java WAR or JAR recursion depths are supported when extracting software supply chain inventories?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-SEC-006"
+      ],
+      "expected_chunk_ids": [
+        "DOC-SEC-006#P1"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "Standard SEC-GATE-511 inspects Go buildinfo, Rust cargo-auditable sections, Electron ASAR bundles, NuGet deps.json, Python dist-info, and nested Maven pom.properties up to 2 archive levels deep [DOC-SEC-006#P1].",
+      "expected_key_terms": [
+        "SEC-GATE-511",
+        "cargo-auditable",
+        "pom.properties"
+      ]
+    },
+    {
+      "case_id": "CASE-021",
+      "category": "semantic_multichunk",
+      "query": "How does the compliance workflow guarantee that a previously authorized answer is automatically revoked if a source policy page is revised?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-HITL-007"
+      ],
+      "expected_chunk_ids": [
+        "DOC-HITL-007#P2"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "Approvals are bound to SHA256(normalized_query || sorted_chunk_sha256_digests || answer_sha256); any upstream edit alters the chunk SHA-256 and transitions the status to invalidated_by_upstream_edit [DOC-HITL-007#P2].",
+      "expected_key_terms": [
+        "SHA256",
+        "invalidated_by_upstream_edit",
+        "sorted_chunk_sha256_digests"
+      ]
+    },
+    {
+      "case_id": "CASE-022",
+      "category": "semantic_multichunk",
+      "query": "What automated rate-limiting penalty is triggered when an engineering division overspends its cloud foundation model quota by fifteen percent?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-FINOPS-012"
+      ],
+      "expected_chunk_ids": [
+        "DOC-FINOPS-012#P2"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "Under CHARGEBACK-CC-77, cost centers exceeding monthly LLM budgets by over 15% are automatically throttled to quantized local CPU models until VP of Finance variance sign-off [DOC-FINOPS-012#P2].",
+      "expected_key_terms": [
+        "CHARGEBACK-CC-77",
+        "15%",
+        "VP of Finance"
+      ]
+    },
+    {
+      "case_id": "CASE-023",
+      "category": "semantic_multichunk",
+      "query": "How does the retrieval pipeline merge sparse keyword hits and dense embedding matches when their raw similarity metrics have incompatible scales?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-RAG-ARCH-002"
+      ],
+      "expected_chunk_ids": [
+        "DOC-RAG-ARCH-002#P2"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "Unbounded BM25 scores and bounded cosine similarities are combined via Reciprocal Rank Fusion (k=60) over ranks before cross-encoder reranking of the top 12 candidates [DOC-RAG-ARCH-002#P2].",
+      "expected_key_terms": [
+        "Reciprocal Rank Fusion",
+        "k=60",
+        "top 12"
+      ]
+    },
+    {
+      "case_id": "CASE-024",
+      "category": "semantic_multichunk",
+      "query": "For an executive reviewing senior level-seven technical leadership packages, what is the yearly equity grant limit and corporate buyout cliff policy?",
+      "user_role": "executive",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-HR-008"
+      ],
+      "expected_chunk_ids": [
+        "DOC-HR-008#P1"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "Under HR-COMP-901, Band L7 Principal and Staff AI Engineers have an annual RSU refresh ceiling of EUR 85,000 vesting over 4 years, with 12-month double-trigger M&A acceleration and a 35% retention bonus [DOC-HR-008#P1].",
+      "expected_key_terms": [
+        "HR-COMP-901",
+        "85,000",
+        "double-trigger"
+      ]
+    },
+    {
+      "case_id": "CASE-025",
+      "category": "semantic_multichunk",
+      "query": "When an executive evaluates workforce downsizing separation benefits, how many weeks or months of pay per year of tenure and what job placement allowance apply?",
+      "user_role": "executive",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-HR-008"
+      ],
+      "expected_chunk_ids": [
+        "DOC-HR-008#P2"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "Schedule HR-SEV-902 provides 1.5 months of base salary per completed year of service (capped at 18 months) plus a EUR 6,000 outplacement transition stipend [DOC-HR-008#P2].",
+      "expected_key_terms": [
+        "HR-SEV-902",
+        "1.5 months",
+        "18 months"
+      ]
+    },
+    {
+      "case_id": "CASE-026",
+      "category": "semantic_multichunk",
+      "query": "What is the chief legal officer's unilateral dispute resolution spending limit and how much capital is held in escrow for European artificial intelligence compliance fines?",
+      "user_role": "legal_compliance",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-LEGAL-009"
+      ],
+      "expected_chunk_ids": [
+        "DOC-LEGAL-009#P1",
+        "DOC-LEGAL-009#P2"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "Under LEG-RES-604, the General Counsel has autonomous settlement authority up to EUR 350,000 [DOC-LEGAL-009#P1], and RESERVE-EUAI-2026 holds EUR 4.2 million in account GL-9940-LIT for EU AI Act audits [DOC-LEGAL-009#P2].",
+      "expected_key_terms": [
+        "350,000",
+        "4.2 million",
+        "GL-9940-LIT"
+      ]
+    },
+    {
+      "case_id": "CASE-027",
+      "category": "rbac_restricted",
+      "query": "What is the Band L7 Principal AI Engineer annual RSU equity ceiling and M&A retention bonus under HR-COMP-901?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [],
+      "expected_chunk_ids": [],
+      "forbidden_doc_ids": [
+        "DOC-HR-008"
+      ],
+      "expect_abstention": true,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": true,
+      "reference_answer": "ABSTAIN: Role 'engineering' lacks pre-retrieval RBAC clearance for restricted HR compensation policy DOC-HR-008.",
+      "expected_key_terms": []
+    },
+    {
+      "case_id": "CASE-028",
+      "category": "rbac_restricted",
+      "query": "Under HR-SEV-902, how many months of severance pay and what outplacement stipend do laid-off employees receive?",
+      "user_role": "public",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [],
+      "expected_chunk_ids": [],
+      "forbidden_doc_ids": [
+        "DOC-HR-008"
+      ],
+      "expect_abstention": true,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": true,
+      "reference_answer": "ABSTAIN: Role 'public' lacks pre-retrieval RBAC clearance for restricted HR severance policy DOC-HR-008.",
+      "expected_key_terms": []
+    },
+    {
+      "case_id": "CASE-029",
+      "category": "rbac_restricted",
+      "query": "What is the General Counsel autonomous settlement limit under protocol LEG-RES-604?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [],
+      "expected_chunk_ids": [],
+      "forbidden_doc_ids": [
+        "DOC-LEGAL-009"
+      ],
+      "expect_abstention": true,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": true,
+      "reference_answer": "ABSTAIN: Role 'engineering' lacks pre-retrieval RBAC clearance for privileged legal protocol DOC-LEGAL-009.",
+      "expected_key_terms": []
+    },
+    {
+      "case_id": "CASE-030",
+      "category": "rbac_restricted",
+      "query": "How much money is held in ledger account GL-9940-LIT under RESERVE-EUAI-2026 for EU AI Act supervisory penalties?",
+      "user_role": "procurement",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [],
+      "expected_chunk_ids": [],
+      "forbidden_doc_ids": [
+        "DOC-LEGAL-009"
+      ],
+      "expect_abstention": true,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": true,
+      "reference_answer": "ABSTAIN: Role 'procurement' lacks pre-retrieval RBAC clearance for privileged legal reserve DOC-LEGAL-009.",
+      "expected_key_terms": []
+    },
+    {
+      "case_id": "CASE-031",
+      "category": "rbac_restricted",
+      "query": "What are the ACV commercial approval tiers in schedule TIER-PROC-302 and the zero-data-retention clause CL-ZDR-09?",
+      "user_role": "public",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [],
+      "expected_chunk_ids": [],
+      "forbidden_doc_ids": [
+        "DOC-PROC-004"
+      ],
+      "expect_abstention": true,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": true,
+      "reference_answer": "ABSTAIN: Role 'public' lacks pre-retrieval RBAC clearance for internal procurement policy DOC-PROC-004.",
+      "expected_key_terms": []
+    },
+    {
+      "case_id": "CASE-032",
+      "category": "rbac_restricted",
+      "query": "What are the ACV commercial approval tiers in schedule TIER-PROC-302 for AI vendor contracts?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [],
+      "expected_chunk_ids": [],
+      "forbidden_doc_ids": [
+        "DOC-PROC-004"
+      ],
+      "expect_abstention": true,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": true,
+      "reference_answer": "ABSTAIN: Role 'engineering' lacks pre-retrieval RBAC clearance for procurement policy DOC-PROC-004.",
+      "expected_key_terms": []
+    },
+    {
+      "case_id": "CASE-033",
+      "category": "rbac_restricted",
+      "query": "Under GDPR-ART28-ANNEX-B and ERASURE-SLA-14D, what are the subprocessor Frankfurt residency and 14-day erasure rules?",
+      "user_role": "public",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [],
+      "expected_chunk_ids": [],
+      "forbidden_doc_ids": [
+        "DOC-GDPR-003"
+      ],
+      "expect_abstention": true,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": true,
+      "reference_answer": "ABSTAIN: Role 'public' lacks pre-retrieval RBAC clearance for internal GDPR compliance standard DOC-GDPR-003.",
+      "expected_key_terms": []
+    },
+    {
+      "case_id": "CASE-034",
+      "category": "rbac_restricted",
+      "query": "What does clinical directive MED-MDR-704 and ISO-13485-CL-7.5.8 require for Class IIb medical device software?",
+      "user_role": "public",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [],
+      "expected_chunk_ids": [],
+      "forbidden_doc_ids": [
+        "DOC-MED-005"
+      ],
+      "expect_abstention": true,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": true,
+      "reference_answer": "ABSTAIN: Role 'public' lacks pre-retrieval RBAC clearance for regulated clinical governance policy DOC-MED-005.",
+      "expected_key_terms": []
+    },
+    {
+      "case_id": "CASE-035",
+      "category": "stale_source",
+      "query": "Under guideline OPS-GPU-2024-09, can engineers rent g5.12xlarge spot GPU nodes in us-east-1 up to USD 4,500/month on a corporate card?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-STALE-010"
+      ],
+      "expected_chunk_ids": [
+        "DOC-STALE-010#P1"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": true,
+      "expect_hitl_flag": true,
+      "reference_answer": "STALE POLICY WARNING: Guideline OPS-GPU-2024-09 (effective 2025-01-15, max staleness 180 days) is expired; it previously described provisioning g5.12xlarge spot instances in us-east-1 up to USD 4,500/month [DOC-STALE-010#P1].",
+      "expected_key_terms": [
+        "OPS-GPU-2024-09",
+        "g5.12xlarge",
+        "4,500"
+      ]
+    },
+    {
+      "case_id": "CASE-036",
+      "category": "stale_source",
+      "query": "Does guideline OPS-S3-2024-11 allow storing temporary model checkpoints in s3://legacy-ml-scratch-2024 without KMS encryption?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-STALE-010"
+      ],
+      "expected_chunk_ids": [
+        "DOC-STALE-010#P2"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": true,
+      "expect_hitl_flag": true,
+      "reference_answer": "STALE POLICY WARNING: Guideline OPS-S3-2024-11 (effective 2025-01-15, max staleness 180 days) is expired; it referenced staging checkpoints in s3://legacy-ml-scratch-2024 for 14 days [DOC-STALE-010#P2].",
+      "expected_key_terms": [
+        "OPS-S3-2024-11",
+        "s3://legacy-ml-scratch-2024",
+        "14 days"
+      ]
+    },
+    {
+      "case_id": "CASE-037",
+      "category": "stale_source",
+      "query": "According to NET-VPN-2025-03, can external contractors connect to staging bastion hosts on port 2222 with static RSA-2048 SSH keys?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-STALE-011"
+      ],
+      "expected_chunk_ids": [
+        "DOC-STALE-011#P1"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": true,
+      "expect_hitl_flag": true,
+      "reference_answer": "STALE POLICY WARNING: SOP NET-VPN-2025-03 (effective 2025-05-10, max staleness 120 days) is expired; it previously permitted bastion connections on TCP port 2222 using static RSA-2048 keys rotated every 90 days [DOC-STALE-011#P1].",
+      "expected_key_terms": [
+        "NET-VPN-2025-03",
+        "2222",
+        "RSA-2048"
+      ]
+    },
+    {
+      "case_id": "CASE-038",
+      "category": "stale_source",
+      "query": "What subnet access does contractor VPN profile PROFILE-EXT-LEGACY grant upon manager email approval?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-STALE-011"
+      ],
+      "expected_chunk_ids": [
+        "DOC-STALE-011#P2"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": true,
+      "expect_hitl_flag": true,
+      "reference_answer": "STALE POLICY WARNING: SOP PROFILE-EXT-LEGACY (effective 2025-05-10, max staleness 120 days) is expired; it referenced split-tunnel routing to staging subnet 10.44.0.0/16 [DOC-STALE-011#P2].",
+      "expected_key_terms": [
+        "PROFILE-EXT-LEGACY",
+        "10.44.0.0/16",
+        "split-tunnel"
+      ]
+    },
+    {
+      "case_id": "CASE-039",
+      "category": "stale_source",
+      "query": "Can research teams use credit cards to launch unreviewed spot GPU machines in Northern Virginia under legacy cloud rules?",
+      "user_role": "procurement",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-STALE-010"
+      ],
+      "expected_chunk_ids": [
+        "DOC-STALE-010#P1"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": true,
+      "expect_hitl_flag": true,
+      "reference_answer": "STALE POLICY WARNING: Legacy guideline OPS-GPU-2024-09 is expired beyond its 180-day freshness window; it previously covered g5.12xlarge spot instances in us-east-1 up to USD 4,500 per month [DOC-STALE-010#P1].",
+      "expected_key_terms": [
+        "OPS-GPU-2024-09",
+        "us-east-1",
+        "4,500"
+      ]
+    },
+    {
+      "case_id": "CASE-040",
+      "category": "stale_source",
+      "query": "Are third-party developers allowed to use 90-day static SSH keys on port 2222 for staging bastion access?",
+      "user_role": "legal_compliance",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [
+        "DOC-STALE-011"
+      ],
+      "expected_chunk_ids": [
+        "DOC-STALE-011#P1"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": true,
+      "expect_hitl_flag": true,
+      "reference_answer": "STALE POLICY WARNING: Expired SOP NET-VPN-2025-03 exceeds its 120-day max staleness limit; it previously described static RSA-2048 SSH keys on port 2222 [DOC-STALE-011#P1].",
+      "expected_key_terms": [
+        "NET-VPN-2025-03",
+        "2222",
+        "90 days"
+      ]
+    },
+    {
+      "case_id": "CASE-041",
+      "category": "stale_source",
+      "query": "As of mid-2027, is clinical AI governance directive MED-MDR-704 still within its allowed freshness window without recertification?",
+      "user_role": "engineering",
+      "as_of_date": "2027-06-15",
+      "expected_doc_ids": [
+        "DOC-MED-005"
+      ],
+      "expected_chunk_ids": [
+        "DOC-MED-005#P1"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": true,
+      "expect_hitl_flag": true,
+      "reference_answer": "STALE POLICY WARNING: As of 2027-06-15, directive MED-MDR-704 (effective 2026-08-01, max staleness 150 days) has exceeded its freshness window and requires recertification [DOC-MED-005#P1].",
+      "expected_key_terms": [
+        "MED-MDR-704",
+        "Class IIa",
+        "clinician"
+      ]
+    },
+    {
+      "case_id": "CASE-042",
+      "category": "stale_source",
+      "query": "As of June 2027, what are the procurement approval thresholds in schedule TIER-PROC-302 if the policy has not been renewed since June 2026?",
+      "user_role": "procurement",
+      "as_of_date": "2027-06-15",
+      "expected_doc_ids": [
+        "DOC-PROC-004"
+      ],
+      "expected_chunk_ids": [
+        "DOC-PROC-004#P1"
+      ],
+      "forbidden_doc_ids": [],
+      "expect_abstention": false,
+      "expect_stale_flag": true,
+      "expect_hitl_flag": true,
+      "reference_answer": "STALE POLICY WARNING: As of 2027-06-15, schedule TIER-PROC-302 (effective 2026-06-20, max staleness 180 days) is stale; it specifies ACV tiers of EUR 50,000 and EUR 250,000 [DOC-PROC-004#P1].",
+      "expected_key_terms": [
+        "TIER-PROC-302",
+        "50,000",
+        "250,000"
+      ]
+    },
+    {
+      "case_id": "CASE-043",
+      "category": "unanswerable_abstention",
+      "query": "What is the daily vegan lunch subsidy amount in the Erlangen campus cafeteria and what time does the coffee bar close?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [],
+      "expected_chunk_ids": [],
+      "forbidden_doc_ids": [],
+      "expect_abstention": true,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "ABSTAIN: No authorized enterprise governance passage provides evidence for campus cafeteria subsidies or operating hours.",
+      "expected_key_terms": []
+    },
+    {
+      "case_id": "CASE-044",
+      "category": "unanswerable_abstention",
+      "query": "What is the departure timetable for the inter-campus hydrogen shuttle bus between Nuremberg and Munich?",
+      "user_role": "public",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [],
+      "expected_chunk_ids": [],
+      "forbidden_doc_ids": [],
+      "expect_abstention": true,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "ABSTAIN: No authorized enterprise governance passage covers inter-campus shuttle bus timetables.",
+      "expected_key_terms": []
+    },
+    {
+      "case_id": "CASE-045",
+      "category": "unanswerable_abstention",
+      "query": "How much cash bonus is awarded to employees when the European Patent Office grants a semiconductor hardware patent?",
+      "user_role": "executive",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [],
+      "expected_chunk_ids": [],
+      "forbidden_doc_ids": [],
+      "expect_abstention": true,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "ABSTAIN: No enterprise governance passage in the corpus specifies patent grant cash bonuses.",
+      "expected_key_terms": []
+    },
+    {
+      "case_id": "CASE-046",
+      "category": "unanswerable_abstention",
+      "query": "What is the minimum flight duration in hours required to book business class airfare for international sales conferences?",
+      "user_role": "procurement",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [],
+      "expected_chunk_ids": [],
+      "forbidden_doc_ids": [],
+      "expect_abstention": true,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "ABSTAIN: Corporate travel and airfare cabin class policies are not present in the governance corpus.",
+      "expected_key_terms": []
+    },
+    {
+      "case_id": "CASE-047",
+      "category": "unanswerable_abstention",
+      "query": "Which D-Wave quantum annealing cryostat lease vendor is approved for superconducting qubit calibration?",
+      "user_role": "engineering",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [],
+      "expected_chunk_ids": [],
+      "forbidden_doc_ids": [],
+      "expect_abstention": true,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "ABSTAIN: No governance document in the corpus addresses quantum annealing hardware or cryostat vendors.",
+      "expected_key_terms": []
+    },
+    {
+      "case_id": "CASE-048",
+      "category": "unanswerable_abstention",
+      "query": "What is the annual wellness reimbursement limit for ergonomic standing desks and fitness center memberships?",
+      "user_role": "hr_restricted",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [],
+      "expected_chunk_ids": [],
+      "forbidden_doc_ids": [],
+      "expect_abstention": true,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "ABSTAIN: Wellness, gym membership, and home-office furniture reimbursements are outside the indexed governance corpus.",
+      "expected_key_terms": []
+    },
+    {
+      "case_id": "CASE-049",
+      "category": "unanswerable_abstention",
+      "query": "What temperature and humidity settings must be maintained in the cold-storage biological tissue biobank freezer room?",
+      "user_role": "legal_compliance",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [],
+      "expected_chunk_ids": [],
+      "forbidden_doc_ids": [],
+      "expect_abstention": true,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "ABSTAIN: Physical biobank freezer temperature and humidity controls are not covered in the software and AI governance corpus.",
+      "expected_key_terms": []
+    },
+    {
+      "case_id": "CASE-050",
+      "category": "unanswerable_abstention",
+      "query": "How many paid sabbatical weeks are granted to employees celebrating their tenth work anniversary?",
+      "user_role": "executive",
+      "as_of_date": "2026-10-27",
+      "expected_doc_ids": [],
+      "expected_chunk_ids": [],
+      "forbidden_doc_ids": [],
+      "expect_abstention": true,
+      "expect_stale_flag": false,
+      "expect_hitl_flag": false,
+      "reference_answer": "ABSTAIN: Sabbatical leave policies for work anniversaries are not present in the indexed governance corpus.",
+      "expected_key_terms": []
+    }
+  ]
+}

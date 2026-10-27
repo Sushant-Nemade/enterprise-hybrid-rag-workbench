@@ -1,0 +1,24 @@
+{
+  "doc_id": "DOC-LEGAL-009",
+  "title": "Board Litigation Reserve, Regulatory Investigation & Settlement Authority Protocol",
+  "allowed_roles": [
+    "legal_compliance",
+    "executive"
+  ],
+  "effective_date": "2026-07-25",
+  "max_staleness_days": 180,
+  "domain": "legal_privileged",
+  "version": "1.9",
+  "pages": [
+    {
+      "page_number": 1,
+      "section_heading": "1. Autonomous Regulatory Settlement Authority (LEG-RES-604)",
+      "content": "PRIVILEGED PROTOCOL LEG-RES-604: The General Counsel holds autonomous authority to settle regulatory investigations or commercial IP disputes up to EUR 350,000 per matter. Any proposed settlement or consent decree exceeding EUR 350,000 requires formal resolution from the Board Audit & Risk Committee."
+    },
+    {
+      "page_number": 2,
+      "section_heading": "2. EU AI Act Supervisory Penalty Reserve (RESERVE-EUAI-2026)",
+      "content": "PRIVILEGED SCHEDULE RESERVE-EUAI-2026: The corporation maintains a ring-fenced regulatory contingency reserve of EUR 4.2 million under general ledger account GL-9940-LIT to cover potential supervisory conformity audits or administrative proceedings under high-risk AI system annexes."
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "doc_id": "DOC-HR-008",
+  "title": "Confidential Executive Compensation, M&A Retention & Workforce Severance Policy",
+  "allowed_roles": [
+    "hr_restricted",
+    "executive"
+  ],
+  "effective_date": "2026-08-10",
+  "max_staleness_days": 180,
+  "domain": "hr_confidential",
+  "version": "2.1",
+  "pages": [
+    {
+      "page_number": 1,
+      "section_heading": "1. Band L7 Principal AI Engineer Equity & M&A Acceleration (HR-COMP-901)",
+      "content": "CONFIDENTIAL SCHEDULE HR-COMP-901: Principal and Staff AI Engineers classified in Band L7 are eligible for an annual Restricted Stock Unit (RSU) refresh ceiling of EUR 85,000, vesting quarterly over 4 years. In the event of a change-in-control M&A transaction, Band L7 agreements include a 12-month double-trigger vesting acceleration clause and a retention bonus equal to 35% of base salary."
+    },
+    {
+      "page_number": 2,
+      "section_heading": "2. Involuntary Restructuring Severance Formula (HR-SEV-902)",
+      "content": "CONFIDENTIAL SCHEDULE HR-SEV-902: In an organizational restructuring or reduction in force, eligible employees receive a severance payout of 1.5 months of base salary per completed year of continuous service, up to a maximum cap of 18 months, plus a fixed EUR 6,000 career outplacement transition stipend."
+    }
+  ]
+}

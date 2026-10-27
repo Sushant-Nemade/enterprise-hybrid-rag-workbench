@@ -1,0 +1,32 @@
+{
+  "doc_id": "DOC-SEC-006",
+  "title": "Third-Party Binary & Open-Source Software Intake Gatekeeper SOP",
+  "allowed_roles": [
+    "public",
+    "engineering",
+    "procurement",
+    "legal_compliance",
+    "executive"
+  ],
+  "effective_date": "2026-09-12",
+  "max_staleness_days": 180,
+  "domain": "devsecops_intake",
+  "version": "3.0",
+  "pages": [
+    {
+      "page_number": 1,
+      "section_heading": "1. Multi-Ecosystem Binary & Archive Inventory (SEC-GATE-511)",
+      "content": "Standard SEC-GATE-511 requires automated read-only intake inspection of third-party packages and compiled binaries before enterprise use. The scanner extracts embedded dependency metadata across Go buildinfo, Rust cargo-auditable sections, Electron ASAR bundles, NuGet deps.json, Python dist-info, and nested Maven pom.properties up to 2 archive levels deep."
+    },
+    {
+      "page_number": 2,
+      "section_heading": "2. Electron Fuse Hardening & Code-Signing Diff Gate (RULE-ELEC-04)",
+      "content": "Under Enforcement Rule RULE-ELEC-04, desktop Electron applications must disable RunAsNode and EnableNodeCliInspectArguments fuses and keep webSecurity set to true. Any binary update that weakens Electron fuses, enables insecure browser flags, strips Windows Authenticode signatures, or alters the Authenticode publisher subject triggers an automatic REJECT or mandatory security review."
+    },
+    {
+      "page_number": 3,
+      "section_heading": "3. Expiring Policy Waivers (WAIVER-MAX-30D)",
+      "content": "Temporary risk acceptance for non-critical intake findings is governed by control WAIVER-MAX-30D. Every policy waiver must be recorded in TOML configuration with a named security approver, issue tracker reference, and an expiration timestamp no more than 30 calendar days from issuance. Expired waivers fail closed in CI."
+    }
+  ]
+}

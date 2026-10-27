@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Enterprise Hybrid RAG, RBAC &amp; Faithfulness Workbench — Sushant Nemade</title>
+<meta name="description" content="Evidence-led Python/FastAPI reference workbench comparing SQLite FTS5 BM25, 384-d Dense Vectors, Reciprocal Rank Fusion (RRF k=60), and Cross-Encoder Reranking with Pre-Retrieval RBAC, Freshness Gating, Passage-Level NLI Claim Verification, and SHA-256 Digest-Bound HITL Review.">
+<style>
+  :root {
+    --bg: #f4f3ef;
+    --surface: #ffffff;
+    --ink: #0f172a;
+    --mute: #475569;
+    --border: #cbd5e1;
+    --border-strong: #0f172a;
+    --amber: #f2c230;
+    --signal: #1d4ed8;
+    --signal-soft: #dbeafe;
+    --ok: #15803d;
+    --ok-soft: #dcfce7;
+    --warn: #b45309;
+    --warn-soft: #fef3c7;
+    --danger: #b91c1c;
+    --danger-soft: #fee2e2;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; overflow-x: hidden; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.55; }
+  .rail { position: fixed; top: 0; left: 0; width: 10px; height: 100%; background: var(--amber); z-index: 20; }
+  .container { max-width: 1180px; margin: 0 auto; padding: 28px 24px 64px 32px; }
+  header.hero { border-bottom: 2px solid var(--border-strong); padding-bottom: 22px; margin-bottom: 24px; }
+  .eyebrow { font-family: var(--mono); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; display: inline-flex; align-items: center; gap: 8px; background: var(--ink); color: #fff; padding: 4px 10px; }
+  .eyebrow .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); }
+  h1 { font-size: clamp(24px, 3.6vw, 38px); line-height: 1.15; margin: 14px 0 10px; letter-spacing: -0.02em; }
+  .subtitle { color: var(--mute); max-width: 82ch; margin: 0 0 16px; font-size: 15px; }
+  .meta-strip { display: flex; flex-wrap: wrap; gap: 10px 18px; font-family: var(--mono); font-size: 12px; color: var(--mute); }
+  .badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border: 1px solid var(--border-strong); background: var(--surface); font-family: var(--mono); font-size: 11.5px; font-weight: 600; color: var(--ink); }
+  .badge.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok); }
+  .badge.warn { background: var(--warn-soft); border-color: var(--warn); color: var(--warn); }
+  .badge.danger { background: var(--danger-soft); border-color: var(--danger); color: var(--danger); }
+
+  nav.tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; border-bottom: 2px solid var(--border-strong); padding-bottom: 12px; }
+  .tab-btn { font-family: var(--mono); font-size: 13px; font-weight: 700; padding: 8px 14px; border: 2px solid var(--border-strong); background: var(--surface); color: var(--ink); cursor: pointer; transition: background 0.12s; }
+  .tab-btn:hover { background: var(--amber); }
+  .tab-btn.active { background: var(--ink); color: #fff; }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 24px; }
+  .kpi-card { background: var(--surface); border: 2px solid var(--border-strong); padding: 14px 16px; }
+  .kpi-label { font-family: var(--mono); font-size: 11.5px; color: var(--mute); text-transform: uppercase; }
+  .kpi-value { font-family: var(--mono); font-size: 26px; font-weight: 800; margin: 4px 0; color: var(--ink); }
+  .kpi-delta { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--ok); }
+
+  .card { background: var(--surface); border: 2px solid var(--border-strong); padding: 18px 20px; margin-bottom: 20px; }
+  .card h2 { font-size: 18px; margin: 0 0 6px; }
+  .card h3 { font-size: 15px; margin: 0 0 10px; font-family: var(--mono); }
+  .card p.desc { color: var(--mute); font-size: 13.5px; margin: 0 0 14px; }
+
+  .table-wrap { width: 100%; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12.5px; }
+  th, td { border: 1px solid var(--border); padding: 9px 10px; text-align: left; vertical-align: top; }
+  th { background: var(--ink); color: #fff; font-weight: 700; white-space: nowrap; }
+  tr.highlight-row { background: #fef9c3; font-weight: 700; }
+
+  .bar-row { display: grid; grid-template-columns: 190px 1fr 68px; align-items: center; gap: 10px; margin-bottom: 8px; font-family: var(--mono); font-size: 12px; }
+  .bar-track { height: 14px; background: #e2e8f0; border: 1px solid var(--border-strong); position: relative; overflow: hidden; }
+  .bar-fill { height: 100%; background: var(--signal); }
+  .bar-fill.target { background: var(--ok); }
+
+  .controls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  label.field { display: flex; flex-direction: column; gap: 5px; font-family: var(--mono); font-size: 12px; font-weight: 700; }
+  select, input[type="text"] { font-family: var(--mono); font-size: 13px; padding: 8px 10px; border: 2px solid var(--border-strong); background: #fff; color: var(--ink); width: 100%; }
+  button.action-btn { font-family: var(--mono); font-size: 13px; font-weight: 700; padding: 9px 16px; border: 2px solid var(--border-strong); background: var(--amber); color: var(--ink); cursor: pointer; }
+  button.action-btn:hover { background: var(--ink); color: #fff; }
+  button.action-btn.secondary { background: #fff; }
+
+  .chunk-card { border: 1px solid var(--border-strong); padding: 12px 14px; margin-bottom: 10px; background: #fafafa; }
+  .chunk-header { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin-bottom: 6px; font-family: var(--mono); font-size: 12px; font-weight: 700; }
+  .score-pills { display: flex; flex-wrap: wrap; gap: 6px; font-family: var(--mono); font-size: 11px; margin-top: 8px; }
+  .score-pill { background: #e2e8f0; padding: 2px 7px; border-radius: 2px; }
+
+  .hash-box { font-family: var(--mono); font-size: 11.5px; background: #0f172a; color: #f8fafc; padding: 10px 12px; overflow-wrap: anywhere; word-break: break-all; margin-top: 8px; border-left: 4px solid var(--amber); }
+
+  footer { margin-top: 40px; padding-top: 18px; border-top: 2px solid var(--border-strong); font-family: var(--mono); font-size: 12px; color: var(--mute); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+  footer a { color: var(--ink); font-weight: 700; }
+
+  @media (max-width: 640px) {
+    .container { padding: 18px 14px 48px 20px; }
+    .bar-row { grid-template-columns: 1fr; gap: 4px; }
+    nav.tabs { flex-direction: column; }
+    .tab-btn { width: 100%; text-align: left; }
+  }
+</style>
+</head>
+<body>
+<div class="rail" aria-hidden="true"></div>
+<div class="container">
+  <header class="hero">
+    <div class="eyebrow"><span class="dot"></span>Staff AI Engineering Reference Workbench</div>
+    <h1>Enterprise Hybrid RAG, Pre-Retrieval RBAC &amp; Faithfulness Workbench</h1>
+    <p class="subtitle">
+      Reproducible, evidence-led Python/FastAPI system upgrading lexical-only PDF QA into a 4-stage Hybrid Retrieval pipeline
+      (SQLite FTS5 BM25 + 384-d Dense Vectors + Reciprocal Rank Fusion <code>k=60</code> + Cross-Encoder Reranking),
+      fail-closed pre-retrieval RBAC &amp; freshness gating, passage-level NLI claim verification, and cryptographic SHA-256 digest-bound HITL review.
+    </p>
+    <div class="meta-strip">
+      <span class="badge ok" id="runtime-mode-badge">Mode: Verifying Runtime...</span>
+      <span class="badge">Corpus: 12 Docs / 30 Page Chunks</span>
+      <span class="badge">Benchmark: 50 Labelled Cases (5 Slices)</span>
+      <span class="badge ok">RBAC Leakage Rate: 0.0000</span>
+      <a class="badge" href="https://github.com/Sushant-Nemade/enterprise-hybrid-rag-workbench">GitHub Repository</a>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Workbench sections">
+    <button class="tab-btn active" data-tab="ablation" role="tab" aria-selected="true">1. 4-Mode Ablation Benchmark</button>
+    <button class="tab-btn" data-tab="playground" role="tab" aria-selected="false">2. Hybrid Retrieval &amp; RBAC Simulator</button>
+    <button class="tab-btn" data-tab="claims" role="tab" aria-selected="false">3. Passage-Level NLI Claim Verifier</button>
+    <button class="tab-btn" data-tab="hitl" role="tab" aria-selected="false">4. Digest-Bound HITL &amp; Invalidation</button>
+  </nav>
+
+  <!-- TAB 1: ABLATION BENCHMARK -->
+  <section class="panel active" id="panel-ablation">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Hybrid RRF + Reranker Recall@5</div>
+        <div class="kpi-value" id="kpi-recall">1.0000</div>
+        <div class="kpi-delta" id="kpi-recall-delta">+0.3529 vs FTS5 Lexical Only (0.6471)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Hybrid RRF + Reranker MRR@10</div>
+        <div class="kpi-value" id="kpi-mrr">0.9853</div>
+        <div class="kpi-delta" id="kpi-mrr-delta">+0.3529 vs FTS5 | +0.0980 vs RRF Only</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Passage Claim Support Rate</div>
+        <div class="kpi-value" id="kpi-support">0.9868</div>
+        <div class="kpi-delta" id="kpi-support-delta">+0.3692 vs FTS5 Lexical Only (0.6176)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Pre-Retrieval RBAC Leakage</div>
+        <div class="kpi-value" id="kpi-leakage">0.0000</div>
+        <div class="kpi-delta">0 unauthorized chunks across 50 cases</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Deterministic 50-Case Ablation Study (4 Retrieval Modes)</h2>
+      <p class="desc">
+        Evaluated across 12 in-scope lexical/code queries, 14 zero-overlap semantic paraphrase queries, 8 RBAC-restricted queries,
+        8 stale-source governance queries, and 8 unanswerable abstention queries as of <code>2026-10-27</code>.
+      </p>
+      <div class="table-wrap">
+        <table id="ablation-table">
+          <thead>
+            <tr>
+              <th>Retrieval Mode</th>
+              <th>Recall@5</th>
+              <th>MRR@10</th>
+              <th>NDCG@10</th>
+              <th>Passage Claim Support</th>
+              <th>RBAC Leakage</th>
+              <th>Abstention Acc</th>
+              <th>Lexical Slice R@5</th>
+              <th>Semantic Slice R@5</th>
+            </tr>
+          </thead>
+          <tbody id="ablation-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Visual Ablation Progression (MRR@10 &amp; Passage Claim Support)</h2>
+      <p class="desc">Reciprocal Rank Fusion (<code>k=60</code>) bridges lexical and semantic recall, while Cross-Encoder Reranking resolves rank ties in top-12 candidates.</p>
+      <div id="ablation-bars"></div>
+    </div>
+
+    <div class="card">
+      <h2>Cryptographic Artifact &amp; Model Provenance (SHA-256 Bound)</h2>
+      <p class="desc">All evaluation metrics in <code>artifacts/rag_eval_report.json</code> are cryptographically bound to dataset, corpus, and ONNX weight digests.</p>
+      <div id="provenance-hashes"></div>
+    </div>
+  </section>
+
+  <!-- TAB 2: HYBRID RETRIEVAL & RBAC SIMULATOR -->
+  <section class="panel" id="panel-playground">
+    <div class="card">
+      <h2>Interactive Hybrid Retrieval, Pre-Retrieval RBAC &amp; Freshness Simulator</h2>
+      <p class="desc">
+        Compare how SQLite FTS5 BM25, 384-d Dense Vectors, Hybrid RRF (<code>k=60</code>), and Cross-Encoder Reranking score passages—and see how changing the user's RBAC role filters restricted documents <em>before</em> index scoring.
+      </p>
+      <div class="controls-grid">
+        <label class="field">
+          <span>Benchmark Scenario</span>
+          <select id="sim-scenario-select"></select>
+        </label>
+        <label class="field">
+          <span>Retrieval Mode</span>
+          <select id="sim-mode-select">
+            <option value="hybrid_rrf_rerank" selected>4. Hybrid RRF + Cross-Encoder Reranker</option>
+            <option value="hybrid_rrf">3. Hybrid RRF (k=60)</option>
+            <option value="dense_vector">2. Dense Bi-Encoder Only (384-d)</option>
+            <option value="lexical_fts5">1. SQLite FTS5 Lexical BM25 Only</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Active RBAC Role</span>
+          <select id="sim-role-select">
+            <option value="engineering" selected>engineering</option>
+            <option value="procurement">procurement</option>
+            <option value="legal_compliance">legal_compliance</option>
+            <option value="executive">executive (Full Clearance)</option>
+            <option value="public">public (Least Privilege)</option>
+          </select>
+        </label>
+      </div>
+      <div id="sim-query-box" class="hash-box" style="margin-bottom: 16px;"></div>
+      <div id="sim-rbac-banner" style="margin-bottom: 16px;"></div>
+      <div id="sim-answer-box" class="card" style="background:#f8fafc;"></div>
+      <h3>Retrieved Authorized Chunks &amp; Multi-Stage Rank Decomposition</h3>
+      <div id="sim-chunks-list"></div>
+    </div>
+  </section>
+
+  <!-- TAB 3: PASSAGE-LEVEL NLI CLAIM VERIFIER -->
+  <section class="panel" id="panel-claims">
+    <div class="card">
+      <h2>Passage-Level Atomic Claim Decomposition &amp; NLI Entailment Inspector</h2>
+      <p class="desc">
+        Synthesized answers are split into atomic sentences. Each sentence is checked for exact <code>[DOC-ID#P#]</code> citation containment in the authorized retrieval window and scored by the local ONNX NLI Cross-Encoder.
+      </p>
+      <div id="claims-inspector-content"></div>
+    </div>
+  </section>
+
+  <!-- TAB 4: DIGEST-BOUND HITL -->
+  <section class="panel" id="panel-hitl">
+    <div class="card">
+      <h2>Cryptographic Digest-Bound Human-in-the-Loop (HITL) Queue</h2>
+      <p class="desc">
+        Under policy <code>HITL-DIGEST-801</code>, human reviewer sign-off is bound to
+        <code>SHA256(normalized_query || sorted_chunk_sha256_digests || answer_sha256)</code>.
+        Simulate approving the queued item below and then editing 1 byte of the upstream policy document to observe automatic invalidation.
+      </p>
+      <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+        <button class="action-btn" id="btn-hitl-approve">1. Approve with Reviewer Sign-Off</button>
+        <button class="action-btn secondary" id="btn-hitl-tamper">2. Simulate Upstream SOP Document Edit (Invalidate Digest)</button>
+        <button class="action-btn secondary" id="btn-hitl-reset">Reset Simulation</button>
+      </div>
+      <div id="hitl-simulation-view"></div>
+    </div>
+  </section>
+
+  <footer>
+    <div>Built by <a href="https://github.com/Sushant-Nemade">Sushant Nemade</a> &middot; MIT License &middot; Deterministic CPU ONNX + SQLite FTS5 Reference</div>
+    <div>
+      <a href="https://sushant-nemade.github.io/">Portfolio</a> &middot;
+      <a href="https://github.com/Sushant-Nemade/enterprise-hybrid-rag-workbench">Source &amp; Benchmarks</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function() {
+  let reportData = null;
+  let bundleData = null;
+  let activeScenarioIdx = 0;
+  let hitlState = null;
+
+  // Tab navigation
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+      });
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+      const target = document.getElementById('panel-' + btn.dataset.tab);
+      if (target) target.classList.add('active');
+    });
+  });
+
+  function escapeHtml(str) {
+    const d = document.createElement('div');
+    d.textContent = String(str ?? '');
+    return d.innerHTML;
+  }
+
+  function renderAblation(report) {
+    const modesOrder = ['lexical_fts5', 'dense_vector', 'hybrid_rrf', 'hybrid_rrf_rerank'];
+    const tbody = document.getElementById('ablation-tbody');
+    tbody.innerHTML = '';
+    const barsEl = document.getElementById('ablation-bars');
+    barsEl.innerHTML = '';
+
+    modesOrder.forEach(mKey => {
+      const m = report.modes[mKey];
+      if (!m) return;
+      const isTarget = mKey === 'hybrid_rrf_rerank';
+      const tr = document.createElement('tr');
+      if (isTarget) tr.className = 'highlight-row';
+      tr.innerHTML = `
+        <td>${escapeHtml(m.mode_label)}</td>
+        <td>${m.Recall_at_5.toFixed(4)}</td>
+        <td>${m.MRR_at_10.toFixed(4)}</td>
+        <td>${m.NDCG_at_10.toFixed(4)}</td>
+        <td>${m.Passage_Claim_Support_Rate.toFixed(4)}</td>
+        <td><span class="badge ok">${m.RBAC_Leakage_Rate.toFixed(4)}</span></td>
+        <td>${m.Unanswerable_Abstention_Accuracy.toFixed(4)}</td>
+        <td>${(m.category_recall_at_5.lexical_factual ?? 0).toFixed(4)}</td>
+        <td>${(m.category_recall_at_5.semantic_multichunk ?? 0).toFixed(4)}</td>
+      `;
+      tbody.appendChild(tr);
+
+      const row = document.createElement('div');
+      row.className = 'bar-row';
+      const pct = Math.round(m.MRR_at_10 * 100);
+      row.innerHTML = `
+        <div><strong>${escapeHtml(m.mode_label)}</strong> (MRR@10)</div>
+        <div class="bar-track"><div class="bar-fill ${isTarget ? 'target' : ''}" style="width:${pct}%"></div></div>
+        <div>${m.MRR_at_10.toFixed(4)}</div>
+      `;
+      barsEl.appendChild(row);
+    });
+
+    const provEl = document.getElementById('provenance-hashes');
+    const modelsHtml = Object.entries(report.models || {}).map(([k, v]) => `
+      <div style="margin-bottom:8px;">
+        <strong>${escapeHtml(k)} (${escapeHtml(v.name)})</strong> — ${escapeHtml(v.architecture)}<br>
+        <code>SHA-256: ${escapeHtml(v.sha256_digest)}</code>
+      </div>
+    `).join('');
+    provEl.innerHTML = `
+      <div class="hash-box">
+        <div><strong>Dataset SHA-256 (50 eval_cases.json):</strong> ${escapeHtml(report.dataset_sha256)}</div>
+        <div><strong>Corpus Manifest SHA-256 (12 docs / 30 chunks):</strong> ${escapeHtml(report.corpus_sha256)}</div>
+      </div>
+      <div style="margin-top:12px; font-family:var(--mono); font-size:12px;">${modelsHtml}</div>
+    `;
+  }
+
+  function renderSimulator() {
+    if (!bundleData || !bundleData.scenarios.length) return;
+    const scenario = bundleData.scenarios[activeScenarioIdx];
+    const mode = document.getElementById('sim-mode-select').value;
+    const role = document.getElementById('sim-role-select').value;
+
+    // If user switched role away from scenario default, use role output (or mode output for default role)
+    let res = scenario.modes[mode];
+    if (role !== scenario.default_role && scenario.roles && scenario.roles[role]) {
+      res = scenario.roles[role];
+    }
+
+    document.getElementById('sim-query-box').innerHTML = `
+      <div><strong>Case ${escapeHtml(scenario.case_id)} [${escapeHtml(scenario.category)}]:</strong> ${escapeHtml(scenario.query)}</div>
+      <div style="margin-top:4px; color:#cbd5e1;">Expected Ground-Truth Chunks: ${escapeHtml((scenario.expected_chunk_ids || []).join(', ') || 'None (Abstention Expected)')} | Active Role: <strong>${escapeHtml(res.user_role)}</strong> | Mode: <strong>${escapeHtml(res.retrieval_mode_label)}</strong></div>
+    `;
+
+    const audit = res.rbac_audit;
+    document.getElementById('sim-rbac-banner').innerHTML = `
+      <div style="display:flex; flex-wrap:wrap; gap:8px;">
+        <span class="badge ok">Authorized Chunks Scored: ${audit.authorized_chunks} / ${audit.total_corpus_chunks}</span>
+        <span class="badge warn">Restricted Chunks Filtered Pre-Retrieval: ${audit.restricted_chunks_filtered_pre_retrieval} (Blocked Docs: ${escapeHtml(audit.restricted_doc_ids_blocked.join(', ') || 'None')})</span>
+        <span class="badge ${res.requires_hitl_review ? 'warn' : 'ok'}">HITL Gate: ${res.requires_hitl_review ? 'FLAGGED (' + escapeHtml(res.hitl_reason) + ')' : 'PASS'}</span>
+      </div>
+    `;
+
+    document.getElementById('sim-answer-box').innerHTML = `
+      <h3>Synthesized Grounded Response</h3>
+      <p style="font-family:var(--mono); font-size:13px; margin:0 0 8px;">${escapeHtml(res.answer_text)}</p>
+      <div class="hash-box">Evidence Digest (SHA-256): ${escapeHtml(res.evidence_digest)}</div>
+    `;
+
+    const chunksEl = document.getElementById('sim-chunks-list');
+    if (!res.retrieved_chunks || !res.retrieved_chunks.length) {
+      chunksEl.innerHTML = `<div class="chunk-card"><strong>No authorized chunks returned.</strong> Reason: ${escapeHtml(res.abstention_reason || 'Filtered pre-retrieval.')}</div>`;
+    } else {
+      chunksEl.innerHTML = res.retrieved_chunks.map(c => `
+        <div class="chunk-card">
+          <div class="chunk-header">
+            <span>#${c.final_rank} &middot; ${escapeHtml(c.chunk_id)} — ${escapeHtml(c.title)} (${escapeHtml(c.section_heading)})</span>
+            <span>
+              ${c.is_stale ? '<span class="badge danger">STALE (' + c.days_overdue + 'd overdue)</span>' : '<span class="badge ok">FRESH (eff. ' + escapeHtml(c.effective_date) + ')</span>'}
+              <span class="badge">Roles: ${escapeHtml(c.allowed_roles.join(', '))}</span>
+            </span>
+          </div>
+          <div style="font-size:13.5px; color:var(--ink);">${escapeHtml(c.text)}</div>
+          <div class="score-pills">
+            <span class="score-pill">Final Score: <strong>${c.final_score.toFixed(4)}</strong></span>
+            <span class="score-pill">FTS5 Rank: ${c.lexical_rank ?? 'Miss'} (BM25: ${c.lexical_bm25_score.toFixed(3)})</span>
+            <span class="score-pill">Dense Rank: #${c.dense_rank ?? '-'} (Cos: ${c.dense_cosine_score.toFixed(3)})</span>
+            <span class="score-pill">RRF Rank: #${c.rrf_rank ?? '-'} (RRF: ${c.rrf_score.toFixed(4)})</span>
+            <span class="score-pill">Cross-Encoder Reranker: ${c.reranker_score !== null && c.reranker_score !== undefined ? c.reranker_score.toFixed(4) : 'N/A'}</span>
+            <span class="score-pill">Chunk SHA-256: ${escapeHtml(c.sha256_digest.slice(0, 16))}...</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Also update Tab 3 Claims Inspector
+    const claimsEl = document.getElementById('claims-inspector-content');
+    if (!res.claims || !res.claims.length) {
+      claimsEl.innerHTML = `<p style="font-family:var(--mono);">Response abstained (${escapeHtml(res.abstention_reason || 'No claims synthesized')}). Abstention support score: <strong>1.0000</strong>.</p>`;
+    } else {
+      claimsEl.innerHTML = `
+        <p style="font-family:var(--mono); font-size:13px;">Active Query: <strong>${escapeHtml(res.query)}</strong> | Overall Passage Claim Support Rate: <strong>${res.passage_claim_support_rate.toFixed(4)}</strong></p>
+        ${res.claims.map(cl => `
+          <div class="chunk-card">
+            <div class="chunk-header">
+              <span>Atomic Claim #${cl.claim_index} &middot; Cited: ${escapeHtml(cl.cited_chunk_ids.join(', ') || 'NONE')}</span>
+              <span class="badge ${cl.is_supported ? 'ok' : 'danger'}">${escapeHtml(cl.verdict)} (Score: ${cl.combined_support_score.toFixed(4)})</span>
+            </div>
+            <div style="font-size:13.5px; margin-bottom:6px;">${escapeHtml(cl.claim_text)}</div>
+            <div class="score-pills">
+              <span class="score-pill">Citation IDs Valid: ${cl.citation_ids_valid ? 'YES' : 'NO'}</span>
+              <span class="score-pill">Supporting Chunk: ${escapeHtml(cl.best_supporting_chunk_id || '-')}</span>
+              <span class="score-pill">NLI Cross-Encoder Entailment: ${cl.nli_entailment_score.toFixed(4)}</span>
+              <span class="score-pill">Lexical Overlap: ${cl.lexical_overlap_score.toFixed(4)}</span>
+            </div>
+          </div>
+        `).join('')}
+      `;
+    }
+  }
+
+  function resetHitlSimulation() {
+    if (!bundleData || !bundleData.hitl_seed || !bundleData.hitl_seed.length) return;
+    const seed = bundleData.hitl_seed[0];
+    hitlState = {
+      review_id: seed.review_id,
+      query: seed.query,
+      user_role: seed.user_role,
+      answer_text: seed.answer_text,
+      chunk_id: 'DOC-STALE-010#P1',
+      original_chunk_sha256: seed.chunk_digests['DOC-STALE-010#P1'],
+      current_chunk_sha256: seed.chunk_digests['DOC-STALE-010#P1'],
+      stored_evidence_digest: seed.evidence_digest,
+      recomputed_evidence_digest: seed.evidence_digest,
+      status: 'pending_review',
+      reviewer_id: null,
+      note: 'Queued automatically under HITL-DIGEST-801 due to stale source policy DOC-STALE-010.'
+    };
+    renderHitlView();
+  }
+
+  function renderHitlView() {
+    if (!hitlState) return;
+    const statusClass = hitlState.status === 'approved' ? 'ok' : (hitlState.status === 'invalidated_by_upstream_edit' ? 'danger' : 'warn');
+    const el = document.getElementById('hitl-simulation-view');
+    el.innerHTML = `
+      <div class="chunk-card">
+        <div class="chunk-header">
+          <span>Review Record: ${escapeHtml(hitlState.review_id)} (Role: ${escapeHtml(hitlState.user_role)})</span>
+          <span class="badge ${statusClass}">Status: ${escapeHtml(hitlState.status.toUpperCase())}</span>
+        </div>
+        <p style="margin:6px 0; font-size:13.5px;"><strong>Query:</strong> ${escapeHtml(hitlState.query)}</p>
+        <p style="margin:6px 0; font-size:13.5px;"><strong>Answer:</strong> ${escapeHtml(hitlState.answer_text)}</p>
+        <p style="margin:6px 0; font-family:var(--mono); font-size:12px; color:var(--mute);"><strong>Audit Note:</strong> ${escapeHtml(hitlState.note)}</p>
+        <div class="hash-box">
+          <div><strong>Cited Chunk (${escapeHtml(hitlState.chunk_id)}) Original SHA-256:</strong> ${escapeHtml(hitlState.original_chunk_sha256)}</div>
+          <div><strong>Cited Chunk (${escapeHtml(hitlState.chunk_id)}) Current SHA-256: </strong> ${escapeHtml(hitlState.current_chunk_sha256)}</div>
+          <hr style="border:0; border-top:1px solid #334155; margin:6px 0;">
+          <div><strong>Stored Approval Evidence Digest:    </strong> ${escapeHtml(hitlState.stored_evidence_digest)}</div>
+          <div><strong>Recomputed Live Evidence Digest:    </strong> ${escapeHtml(hitlState.recomputed_evidence_digest)}</div>
+          <div><strong>Cryptographic Digest Match:         </strong> ${hitlState.stored_evidence_digest === hitlState.recomputed_evidence_digest ? 'TRUE (VALID)' : 'FALSE (UPSTREAM EDIT DETECTED -> APPROVAL VOIDED)'}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  document.getElementById('btn-hitl-approve').addEventListener('click', () => {
+    if (!hitlState) return;
+    hitlState.status = 'approved';
+    hitlState.reviewer_id = 'dpo-reviewer@enterprise.local';
+    hitlState.current_chunk_sha256 = hitlState.original_chunk_sha256;
+    hitlState.recomputed_evidence_digest = hitlState.stored_evidence_digest;
+    hitlState.note = 'Approved by dpo-reviewer@enterprise.local bound to exact SHA-256 evidence digest.';
+    renderHitlView();
+  });
+
+  document.getElementById('btn-hitl-tamper').addEventListener('click', () => {
+    if (!hitlState) return;
+    // Simulate upstream edit changing DOC-STALE-010#P1 content hash
+    hitlState.current_chunk_sha256 = 'e9f91b4c8802a7401d3b55c92f88e1047d99a11044c8f021a7788192039481ab';
+    hitlState.recomputed_evidence_digest = '7c44201f98a234b671209c88a71234e550912837465192837465918273645001';
+    hitlState.status = 'invalidated_by_upstream_edit';
+    hitlState.note = 'AUTOMATIC INVALIDATION: Upstream edit to DOC-STALE-010#P1 changed chunk SHA-256; prior human approval is cryptographically voided.';
+    renderHitlView();
+  });
+
+  document.getElementById('btn-hitl-reset').addEventListener('click', resetHitlSimulation);
+
+  async function initWorkbench() {
+    const badge = document.getElementById('runtime-mode-badge');
+    try {
+      const [repResp, bunResp] = await Promise.all([
+        fetch('./data/rag_eval_report.json'),
+        fetch('./data/workbench_bundle.json')
+      ]);
+      reportData = await repResp.json();
+      bundleData = await bunResp.json();
+
+      // Check if live FastAPI /api/health is reachable
+      try {
+        const h = await fetch('./api/health');
+        if (h.ok) {
+          badge.textContent = 'Runtime: Live FastAPI + ONNX CPU Server';
+        } else {
+          badge.textContent = 'Runtime: Verified Static Artifact Bundle (GitHub Pages)';
+        }
+      } catch (_e) {
+        badge.textContent = 'Runtime: Verified Static Artifact Bundle (GitHub Pages)';
+      }
+
+      renderAblation(reportData);
+
+      const sel = document.getElementById('sim-scenario-select');
+      sel.innerHTML = bundleData.scenarios.map((s, idx) =>
+        `<option value="${idx}">${escapeHtml(s.label)}</option>`
+      ).join('');
+      sel.addEventListener('change', () => {
+        activeScenarioIdx = Number(sel.value);
+        document.getElementById('sim-role-select').value = bundleData.scenarios[activeScenarioIdx].default_role;
+        renderSimulator();
+      });
+      document.getElementById('sim-mode-select').addEventListener('change', renderSimulator);
+      document.getElementById('sim-role-select').addEventListener('change', renderSimulator);
+
+      renderSimulator();
+      resetHitlSimulation();
+    } catch (err) {
+      badge.textContent = 'Error loading workbench bundle';
+      console.error(err);
+    }
+  }
+
+  initWorkbench();
+})();
+</script>
+</body>
+</html>

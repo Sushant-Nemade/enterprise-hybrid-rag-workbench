@@ -1,0 +1,56 @@
+name: Verify Enterprise Hybrid RAG Workbench
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: ubuntu-latest, python: '3.12'}
+          - {os: ubuntu-latest, python: '3.13'}
+          - {os: windows-latest, python: '3.13'}
+    runs-on: ${{ matrix.os }}
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.13.0'
+      - run: uv sync --frozen
+      - run: uv run --frozen ruff check src tests scripts
+      - run: uv run --frozen mypy src/hybrid_rag
+      - run: uv run --frozen pytest -q
+      - run: uv run --frozen python -m hybrid_rag.evaluate --check
+      - run: uv run --frozen pip-audit
+      - run: uv run --frozen python scripts/package_site.py
+      - run: uv run --frozen python -m build
+      - run: uv run --frozen twine check dist/*
+      - uses: actions/upload-artifact@v4
+        if: matrix.os == 'ubuntu-latest' && matrix.python == '3.13'
+        with:
+          name: enterprise-hybrid-rag-workbench-reference
+          path: dist/*
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t enterprise-hybrid-rag-workbench .
+      - run: docker run --rm enterprise-hybrid-rag-workbench python -c "import os; assert os.getuid()!=0; from hybrid_rag.evaluate import main; assert main(['--check'])==0"
+      - run: |
+          docker run -d --name rag-workbench -p 127.0.0.1:8898:8000 enterprise-hybrid-rag-workbench
+          curl --fail --retry 8 --retry-all-errors --connect-timeout 3 --max-time 5 --retry-max-time 60 --retry-delay 1 http://127.0.0.1:8898/api/health
+          curl --fail http://127.0.0.1:8898/
+      - if: always()
+        run: |
+          docker logs rag-workbench || true
+          docker rm -f rag-workbench || true

@@ -1,0 +1,26 @@
+{
+  "doc_id": "DOC-STALE-011",
+  "title": "Expired 2025 Third-Party Contractor VPN & Static SSH Key SOP",
+  "allowed_roles": [
+    "public",
+    "engineering",
+    "legal_compliance",
+    "executive"
+  ],
+  "effective_date": "2025-05-10",
+  "max_staleness_days": 120,
+  "domain": "legacy_network_sec",
+  "version": "1.1",
+  "pages": [
+    {
+      "page_number": 1,
+      "section_heading": "1. Static RSA-2048 Bastion SSH Access (NET-VPN-2025-03)",
+      "content": "EXPIRED SOP NET-VPN-2025-03: External engineering contractors are permitted to connect to staging bastion hosts on TCP port 2222 using static RSA-2048 SSH keys rotated manually every 90 days."
+    },
+    {
+      "page_number": 2,
+      "section_heading": "2. Split-Tunnel Subnet Routing (PROFILE-EXT-LEGACY)",
+      "content": "EXPIRED SOP PROFILE-EXT-LEGACY: Contractor VPN profile PROFILE-EXT-LEGACY grants split-tunnel routing to internal staging subnet 10.44.0.0/16 upon email approval from a project manager."
+    }
+  ]
+}

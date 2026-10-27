@@ -1,0 +1,31 @@
+{
+  "doc_id": "DOC-AI-SOP-001",
+  "title": "Enterprise GenAI Model Deployment & Shadow Release SOP",
+  "allowed_roles": [
+    "public",
+    "engineering",
+    "legal_compliance",
+    "executive"
+  ],
+  "effective_date": "2026-08-15",
+  "max_staleness_days": 180,
+  "domain": "ai_governance",
+  "version": "2.4",
+  "pages": [
+    {
+      "page_number": 1,
+      "section_heading": "1. Pre-Production Release Gate (GATE-AI-104)",
+      "content": "Under Enterprise Release Gate GATE-AI-104, every generative AI and retrieval-augmented service must pass an offline deterministic benchmark before promotion to staging or production. The release artifact must record SHA-256 digests for both the evaluation dataset and model weights, achieve a minimum NDCG@10 score of 0.82, maintain a Passage Claim Support Rate of at least 0.85, and demonstrate a pre-retrieval RBAC Leakage Rate of exactly 0.0 across all role tiers."
+    },
+    {
+      "page_number": 2,
+      "section_heading": "2. Shadow Deployment Telemetry & PSI Drift Ceiling",
+      "content": "New retrieval or reranking models must execute in shadow deployment mode (canary silent parallel evaluation alongside the active production baseline) for a minimum of 72 hours. Automated telemetry monitors query-embedding Population Stability Index (PSI) and latency. If the Population Stability Index (PSI) distribution shift exceeds the drift ceiling of 0.08 or CPU P99 latency exceeds 450 milliseconds, the circuit breaker triggers an immediate rollback to the deterministic baseline."
+    },
+    {
+      "page_number": 3,
+      "section_heading": "3. Audit Log Retention & Hallucination Incident Escalation",
+      "content": "Immutable retrieval traces containing query hashes, role clearances, and cited chunk SHA-256 digests must be retained for 90 calendar days in append-only audit storage. If post-synthesis NLI monitoring detects an unsupported claim rate above 3.0% over any rolling 24-hour window, an incident ticket under code INC-SEV2-RAG must be escalated to the AI Safety Lead within 4 hours."
+    }
+  ]
+}

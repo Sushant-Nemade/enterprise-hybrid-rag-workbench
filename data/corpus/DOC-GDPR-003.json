@@ -1,0 +1,30 @@
+{
+  "doc_id": "DOC-GDPR-003",
+  "title": "GDPR Article 28 Data Processing, PII Redaction & Cross-Border Transfer Standard",
+  "allowed_roles": [
+    "engineering",
+    "legal_compliance",
+    "executive"
+  ],
+  "effective_date": "2026-07-10",
+  "max_staleness_days": 180,
+  "domain": "privacy_gdpr",
+  "version": "2.0",
+  "pages": [
+    {
+      "page_number": 1,
+      "section_heading": "1. Subprocessor Onboarding & Sovereign Residency (GDPR-ART28-ANNEX-B)",
+      "content": "Under Clause GDPR-ART28-ANNEX-B, any external cloud or AI subprocessor handling enterprise data must execute a countersigned Data Processing Addendum (DPA) prior to integration. All vector indices, relational databases, and telemetry logs must reside exclusively within EU/EEA sovereign data centers in eu-central-1 (Frankfurt), with a binding 72-hour personal data breach notification SLA."
+    },
+    {
+      "page_number": 2,
+      "section_heading": "2. Pre-Ingestion PII Scrubbing & Checksum Pseudonymization",
+      "content": "Before any document is chunked or embedded into the retrieval store, deterministic PII detectors must screen for German tax identifiers (Steuer-ID, 11 digits), statutory health insurance numbers (KVNR, 10-character alphanumeric), and international bank account numbers (IBAN, MOD-97-10 checksum). Confirmed personal identifiers must be replaced with salted SHA-256 pseudonyms prior to indexing."
+    },
+    {
+      "page_number": 3,
+      "section_heading": "3. Article 17 Right to Erasure Purge SLA (ERASURE-SLA-14D)",
+      "content": "Workflow ERASURE-SLA-14D governs GDPR Article 17 erasure requests. When a data subject or enterprise client revokes consent, all associated document chunks, SQLite FTS5 inverted index tokens, dense vector embeddings, and cached HITL review records must be cryptographically purged and verified absent within 14 calendar days."
+    }
+  ]
+}

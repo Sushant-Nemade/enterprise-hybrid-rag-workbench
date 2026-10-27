@@ -1,0 +1,11 @@
+include LICENSE README.md pyproject.toml uv.lock .gitattributes
+include Dockerfile .dockerignore
+recursive-include src *.py *.typed *.onnx *.html *.css *.js *.json
+recursive-include data *.json *.md
+recursive-include artifacts *.json
+recursive-include docs *.md
+recursive-include tests *.py
+recursive-include .github *.yml
+prune build
+prune dist
+global-exclude *.pyc *.pkl *.pickle *.pem .env *.sqlite *.db

@@ -1,0 +1,26 @@
+{
+  "doc_id": "DOC-FINOPS-012",
+  "title": "Enterprise Token Quota, Caching & FinOps Cost Attribution Standard",
+  "allowed_roles": [
+    "public",
+    "engineering",
+    "procurement",
+    "executive"
+  ],
+  "effective_date": "2026-09-05",
+  "max_staleness_days": 180,
+  "domain": "finops_governance",
+  "version": "2.2",
+  "pages": [
+    {
+      "page_number": 1,
+      "section_heading": "1. Daily Tenant Token Quotas & Semantic Cache TTL (FIN-QUOTA-312)",
+      "content": "Standard FIN-QUOTA-312 enforces deterministic token governance across all internal workspaces. Each business unit tenant is capped at 2,500,000 input tokens per day and 400,000 output tokens per day. Identical queries against an unchanged corpus SHA-256 digest are served from a deterministic response cache with a 24-hour TTL."
+    },
+    {
+      "page_number": 2,
+      "section_heading": "2. Budget Variance Throttling & Local CPU Fallback (CHARGEBACK-CC-77)",
+      "content": "Under Cost Control CHARGEBACK-CC-77, cost centers that exceed their monthly LLM API budget allocation by more than 15% are automatically throttled to quantized local CPU models until a variance sign-off is approved by the VP of Finance."
+    }
+  ]
+}

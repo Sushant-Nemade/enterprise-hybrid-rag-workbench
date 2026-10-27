@@ -1,0 +1,26 @@
+{
+  "doc_id": "DOC-STALE-010",
+  "title": "Legacy 2024 Cloud GPU Spot Instance & Unencrypted Model Bucket Guideline",
+  "allowed_roles": [
+    "public",
+    "engineering",
+    "procurement",
+    "executive"
+  ],
+  "effective_date": "2025-01-15",
+  "max_staleness_days": 180,
+  "domain": "legacy_cloud_ops",
+  "version": "0.9",
+  "pages": [
+    {
+      "page_number": 1,
+      "section_heading": "1. Ad-Hoc Spot GPU Provisioning (OPS-GPU-2024-09)",
+      "content": "LEGACY GUIDELINE OPS-GPU-2024-09: Research engineers may provision shared g5.12xlarge spot GPU instances in AWS region us-east-1 up to USD 4,500 per month using departmental corporate credit cards without prior FinOps architecture review."
+    },
+    {
+      "page_number": 2,
+      "section_heading": "2. Temporary Scratch Bucket Checkpoints (OPS-S3-2024-11)",
+      "content": "LEGACY GUIDELINE OPS-S3-2024-11: Experimental model weight checkpoints may be staged in bucket s3://legacy-ml-scratch-2024 for up to 14 days with server-side KMS encryption marked optional during benchmark debugging."
+    }
+  ]
+}

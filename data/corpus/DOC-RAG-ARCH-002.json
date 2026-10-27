@@ -1,0 +1,30 @@
+{
+  "doc_id": "DOC-RAG-ARCH-002",
+  "title": "Hybrid Retrieval & Cross-Encoder Reranking Architecture Standard",
+  "allowed_roles": [
+    "public",
+    "engineering",
+    "executive"
+  ],
+  "effective_date": "2026-09-01",
+  "max_staleness_days": 365,
+  "domain": "retrieval_architecture",
+  "version": "3.1",
+  "pages": [
+    {
+      "page_number": 1,
+      "section_heading": "1. Dual-Index Lexical and Dense Specification (SPEC-RET-208)",
+      "content": "Architecture Specification SPEC-RET-208 mandates a dual-index retrieval layer over page-aware document chunks. The lexical index uses SQLite FTS5 with BM25 scoring (parameters k1=1.2 and b=0.75) to capture exact alphanumeric identifiers, regulatory codes, and statutory clauses. The dense semantic index projects chunks into 384-dimensional L2-normalized embeddings (all-MiniLM-L6-v2 / ONNX CPU execution) scored via exact cosine similarity."
+    },
+    {
+      "page_number": 2,
+      "section_heading": "2. Reciprocal Rank Fusion (RRF k=60) & Cross-Encoder Reranking",
+      "content": "To reconcile uncalibrated BM25 unbounded scores with bounded cosine similarities [-1, 1], rankings are combined via Reciprocal Rank Fusion using smoothing constant k=60: RRF_score(d) = 1/(60 + rank_lexical(d)) + 1/(60 + rank_dense(d)). The top 12 fused candidates are then rescored by a local Cross-Encoder reranker (cross-encoder/ms-marco-MiniLM-L-6-v2) that computes joint query-passage interaction logits before selecting the final top-k context window."
+    },
+    {
+      "page_number": 3,
+      "section_heading": "3. Pre-Retrieval Security Predicate Enforcement (AC-PRE-01)",
+      "content": "Security Control AC-PRE-01 strictly prohibits post-retrieval permission filtering. Role-based access control predicates must filter the candidate chunk pool before executing SQLite FTS5 match queries or dense matrix products. Post-retrieval filtering is banned because restricted chunks can displace authorized evidence from the top-k window and create side-channel inference risks."
+    }
+  ]
+}
