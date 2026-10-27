@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import re
 import sqlite3
+import threading
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -44,12 +45,17 @@ class HITLReviewQueue:
 
     def __init__(self, db_path: str | Path = ":memory:") -> None:
         self.db_path = str(db_path)
-        self._conn = sqlite3.connect(self.db_path, check_same_thread=False)
+        self._lock = threading.RLock()
+        self._conn = sqlite3.connect(self.db_path, timeout=30.0, check_same_thread=False)
         self._conn.row_factory = sqlite3.Row
         self._init_schema()
 
     def _init_schema(self) -> None:
-        with self._conn:
+        with self._lock, self._conn:
+            if self.db_path != ":memory:":
+                self._conn.execute("PRAGMA journal_mode=WAL;")
+                self._conn.execute("PRAGMA synchronous=NORMAL;")
+            self._conn.execute("PRAGMA busy_timeout=30000;")
             self._conn.execute(
                 """
                 CREATE TABLE IF NOT EXISTS hitl_reviews (
@@ -98,55 +104,58 @@ class HITLReviewQueue:
         ev_digest = compute_evidence_digest(req.query, req.chunk_digests, req.answer_text)
         now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
-        with self._conn:
-            self._conn.execute(
-                """
-                INSERT INTO hitl_reviews (
-                    review_id, query, user_role, retrieval_mode, answer_text,
-                    cited_chunk_ids_json, chunk_digests_json, answer_sha256,
-                    evidence_digest, status, flagged_reason, reviewer_id,
-                    reviewer_notes, created_at, reviewed_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, ?, NULL);
-                """,
-                (
-                    review_id,
-                    req.query,
-                    req.user_role.value,
-                    req.retrieval_mode.value,
-                    req.answer_text,
-                    json.dumps(req.cited_chunk_ids),
-                    json.dumps(req.chunk_digests, sort_keys=True),
-                    answer_sha,
-                    ev_digest,
-                    HITLReviewStatus.PENDING_REVIEW.value,
-                    req.flagged_reason,
-                    now_iso,
-                ),
-            )
-        return self.get(review_id)
+        with self._lock:
+            with self._conn:
+                self._conn.execute(
+                    """
+                    INSERT INTO hitl_reviews (
+                        review_id, query, user_role, retrieval_mode, answer_text,
+                        cited_chunk_ids_json, chunk_digests_json, answer_sha256,
+                        evidence_digest, status, flagged_reason, reviewer_id,
+                        reviewer_notes, created_at, reviewed_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, ?, NULL);
+                    """,
+                    (
+                        review_id,
+                        req.query,
+                        req.user_role.value,
+                        req.retrieval_mode.value,
+                        req.answer_text,
+                        json.dumps(req.cited_chunk_ids),
+                        json.dumps(req.chunk_digests, sort_keys=True),
+                        answer_sha,
+                        ev_digest,
+                        HITLReviewStatus.PENDING_REVIEW.value,
+                        req.flagged_reason,
+                        now_iso,
+                    ),
+                )
+            return self.get(review_id)
 
     def get(self, review_id: str) -> HITLReviewRecord:
         """Fetch a single HITL review record by ID."""
-        row = self._conn.execute(
-            "SELECT * FROM hitl_reviews WHERE review_id = ?;",
-            (review_id,),
-        ).fetchone()
-        if row is None:
-            raise KeyError(f"HITL review record {review_id!r} not found")
-        return self._row_to_record(row)
+        with self._lock:
+            row = self._conn.execute(
+                "SELECT * FROM hitl_reviews WHERE review_id = ?;",
+                (review_id,),
+            ).fetchone()
+            if row is None:
+                raise KeyError(f"HITL review record {review_id!r} not found")
+            return self._row_to_record(row)
 
     def list_records(self, status: HITLReviewStatus | None = None) -> list[HITLReviewRecord]:
         """List all persisted HITL review records, optionally filtered by status."""
-        if status is not None:
-            rows = self._conn.execute(
-                "SELECT * FROM hitl_reviews WHERE status = ? ORDER BY created_at DESC, review_id ASC;",
-                (status.value,),
-            ).fetchall()
-        else:
-            rows = self._conn.execute(
-                "SELECT * FROM hitl_reviews ORDER BY created_at DESC, review_id ASC;"
-            ).fetchall()
-        return [self._row_to_record(r) for r in rows]
+        with self._lock:
+            if status is not None:
+                rows = self._conn.execute(
+                    "SELECT * FROM hitl_reviews WHERE status = ? ORDER BY created_at DESC, review_id ASC;",
+                    (status.value,),
+                ).fetchall()
+            else:
+                rows = self._conn.execute(
+                    "SELECT * FROM hitl_reviews ORDER BY created_at DESC, review_id ASC;"
+                ).fetchall()
+            return [self._row_to_record(r) for r in rows]
 
     def record_decision(
         self,
@@ -154,69 +163,70 @@ class HITLReviewQueue:
         current_corpus_chunk_digests: dict[str, str] | None = None,
     ) -> HITLReviewRecord:
         """Record a human approval or rejection strictly bound to expected_evidence_digest."""
-        existing = self.get(req.review_id)
+        with self._lock:
+            existing = self.get(req.review_id)
 
-        if existing.evidence_digest != req.expected_evidence_digest:
-            raise ValueError(
-                f"Evidence digest mismatch for {req.review_id}: expected "
-                f"{req.expected_evidence_digest}, stored {existing.evidence_digest}"
-            )
-
-        # If live corpus chunk digests are supplied, verify no upstream edit happened before approval
-        if current_corpus_chunk_digests is not None:
-            active_digests = {
-                cid: current_corpus_chunk_digests.get(cid, "")
-                for cid in existing.chunk_digests
-            }
-            recomputed = compute_evidence_digest(
-                existing.query, active_digests, existing.answer_text
-            )
-            if recomputed != existing.evidence_digest:
-                now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-                with self._conn:
-                    self._conn.execute(
-                        """
-                        UPDATE hitl_reviews
-                           SET status = ?, reviewed_at = ?, reviewer_notes = ?
-                         WHERE review_id = ?;
-                        """,
-                        (
-                            HITLReviewStatus.INVALIDATED_BY_UPSTREAM_EDIT.value,
-                            now_iso,
-                            "Upstream chunk SHA-256 digest changed prior to approval.",
-                            req.review_id,
-                        ),
-                    )
+            if existing.evidence_digest != req.expected_evidence_digest:
                 raise ValueError(
-                    f"Approval blocked for {req.review_id}: upstream document edit invalidated evidence digest."
+                    f"Evidence digest mismatch for {req.review_id}: expected "
+                    f"{req.expected_evidence_digest}, stored {existing.evidence_digest}"
                 )
 
-        new_status = (
-            HITLReviewStatus.APPROVED
-            if req.decision == "approve"
-            else HITLReviewStatus.REJECTED
-        )
-        now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+            # If live corpus chunk digests are supplied, verify no upstream edit happened before approval
+            if current_corpus_chunk_digests is not None:
+                active_digests = {
+                    cid: current_corpus_chunk_digests.get(cid, "")
+                    for cid in existing.chunk_digests
+                }
+                recomputed = compute_evidence_digest(
+                    existing.query, active_digests, existing.answer_text
+                )
+                if recomputed != existing.evidence_digest:
+                    now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+                    with self._conn:
+                        self._conn.execute(
+                            """
+                            UPDATE hitl_reviews
+                               SET status = ?, reviewed_at = ?, reviewer_notes = ?
+                             WHERE review_id = ?;
+                            """,
+                            (
+                                HITLReviewStatus.INVALIDATED_BY_UPSTREAM_EDIT.value,
+                                now_iso,
+                                "Upstream chunk SHA-256 digest changed prior to approval.",
+                                req.review_id,
+                            ),
+                        )
+                    raise ValueError(
+                        f"Approval blocked for {req.review_id}: upstream document edit invalidated evidence digest."
+                    )
 
-        with self._conn:
-            self._conn.execute(
-                """
-                UPDATE hitl_reviews
-                   SET status = ?,
-                       reviewer_id = ?,
-                       reviewer_notes = ?,
-                       reviewed_at = ?
-                 WHERE review_id = ?;
-                """,
-                (
-                    new_status.value,
-                    req.reviewer_id,
-                    req.reviewer_notes,
-                    now_iso,
-                    req.review_id,
-                ),
+            new_status = (
+                HITLReviewStatus.APPROVED
+                if req.decision == "approve"
+                else HITLReviewStatus.REJECTED
             )
-        return self.get(req.review_id)
+            now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+            with self._conn:
+                self._conn.execute(
+                    """
+                    UPDATE hitl_reviews
+                       SET status = ?,
+                           reviewer_id = ?,
+                           reviewer_notes = ?,
+                           reviewed_at = ?
+                     WHERE review_id = ?;
+                    """,
+                    (
+                        new_status.value,
+                        req.reviewer_id,
+                        req.reviewer_notes,
+                        now_iso,
+                        req.review_id,
+                    ),
+                )
+            return self.get(req.review_id)
 
     def verify_digest(
         self,
@@ -224,44 +234,45 @@ class HITLReviewQueue:
         current_chunk_digests: dict[str, str],
     ) -> HITLVerifyDigestResponse:
         """Verify whether a previously approved record remains valid against current chunk SHA-256s."""
-        record = self.get(review_id)
-        previous_status = record.status
-
-        modified_chunks: list[str] = []
-        active_chunk_map: dict[str, str] = {}
-        for cid, original_sha in record.chunk_digests.items():
-            current_sha = current_chunk_digests.get(cid)
-            if current_sha is None or current_sha != original_sha:
-                modified_chunks.append(cid)
-                active_chunk_map[cid] = current_sha or "MISSING_CHUNK"
-            else:
-                active_chunk_map[cid] = current_sha
-
-        recomputed_digest = compute_evidence_digest(
-            record.query,
-            active_chunk_map,
-            record.answer_text,
-        )
-        digest_matches = (recomputed_digest == record.evidence_digest) and not modified_chunks
-
-        if not digest_matches and record.status == HITLReviewStatus.APPROVED:
-            now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-            with self._conn:
-                self._conn.execute(
-                    """
-                    UPDATE hitl_reviews
-                       SET status = ?, reviewed_at = ?
-                     WHERE review_id = ?;
-                    """,
-                    (
-                        HITLReviewStatus.INVALIDATED_BY_UPSTREAM_EDIT.value,
-                        now_iso,
-                        review_id,
-                    ),
-                )
+        with self._lock:
             record = self.get(review_id)
+            previous_status = record.status
 
-        return HITLVerifyDigestResponse(
+            modified_chunks: list[str] = []
+            active_chunk_map: dict[str, str] = {}
+            for cid, original_sha in record.chunk_digests.items():
+                current_sha = current_chunk_digests.get(cid)
+                if current_sha is None or current_sha != original_sha:
+                    modified_chunks.append(cid)
+                    active_chunk_map[cid] = current_sha or "MISSING_CHUNK"
+                else:
+                    active_chunk_map[cid] = current_sha
+
+            recomputed_digest = compute_evidence_digest(
+                record.query,
+                active_chunk_map,
+                record.answer_text,
+            )
+            digest_matches = (recomputed_digest == record.evidence_digest) and not modified_chunks
+
+            if not digest_matches and record.status == HITLReviewStatus.APPROVED:
+                now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+                with self._conn:
+                    self._conn.execute(
+                        """
+                        UPDATE hitl_reviews
+                           SET status = ?, reviewed_at = ?
+                         WHERE review_id = ?;
+                        """,
+                        (
+                            HITLReviewStatus.INVALIDATED_BY_UPSTREAM_EDIT.value,
+                            now_iso,
+                            review_id,
+                        ),
+                    )
+                record = self.get(review_id)
+
+            return HITLVerifyDigestResponse(
             review_id=review_id,
             previous_status=previous_status,
             current_status=record.status,

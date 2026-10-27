@@ -2,11 +2,23 @@
 
 from __future__ import annotations
 
+import re
 from datetime import date
 from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+UNSAFE_INPUT_PATTERN = re.compile(
+    r"(?:<\s*script|javascript:|onerror\s*=|onload\s*=|[\x00-\x08\x0b\x0c\x0e-\x1f])",
+    re.IGNORECASE,
+)
+
+
+def _reject_unsafe_text(value: str, field_name: str) -> str:
+    if UNSAFE_INPUT_PATTERN.search(value):
+        raise ValueError(f"{field_name} contains disallowed script/HTML injection or ASCII control characters")
+    return value
 
 
 class RoleEnum(StrEnum):
@@ -229,6 +241,11 @@ class QueryRequest(BaseModel):
     as_of_date: str = Field(default="2026-10-27", pattern=r"^\d{4}-\d{2}-\d{2}$")
     enqueue_hitl_if_flagged: bool = Field(default=False)
 
+    @field_validator("query")
+    @classmethod
+    def _validate_safe_query(cls, value: str) -> str:
+        return _reject_unsafe_text(value, "query")
+
     @field_validator("as_of_date")
     @classmethod
     def _validate_as_of_date(cls, value: str) -> str:
@@ -417,6 +434,11 @@ class HITLSubmitRequest(BaseModel):
     chunk_digests: dict[str, str] = Field(..., min_length=1)
     flagged_reason: str = Field(..., min_length=3, max_length=300)
 
+    @field_validator("query", "answer_text", "flagged_reason")
+    @classmethod
+    def _validate_safe_submit_fields(cls, value: str) -> str:
+        return _reject_unsafe_text(value, "HITLSubmitRequest field")
+
 
 class HITLDecisionRequest(BaseModel):
     """Human reviewer decision bound to the expected evidence SHA-256 digest."""
@@ -428,6 +450,11 @@ class HITLDecisionRequest(BaseModel):
     expected_evidence_digest: str = Field(..., min_length=64, max_length=64, pattern=r"^[0-9a-f]{64}$")
     reviewer_id: str = Field(..., min_length=2, max_length=80)
     reviewer_notes: str = Field(default="", max_length=500)
+
+    @field_validator("reviewer_id", "reviewer_notes")
+    @classmethod
+    def _validate_safe_decision_fields(cls, value: str) -> str:
+        return _reject_unsafe_text(value, "HITLDecisionRequest field")
 
 
 class HITLVerifyDigestRequest(BaseModel):
